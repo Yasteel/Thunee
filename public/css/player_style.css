@@ -1,0 +1,200 @@
+.wrapper .body
+{
+  display: flex;
+}
+
+.wrapper .body > section
+{
+  height: 100%;
+}
+
+section.main
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  padding: 0 30px;
+  width: calc(100% - 400px);
+}
+
+section.side
+{
+  width: 400px;
+  background: var(--d_black);
+}
+
+section.main .card
+{
+  height: 350px;
+  border: 2px solid var(--d_black);
+  display: flex;
+  flex-direction: column;
+}
+
+.card.players
+{
+  width: 400px;
+}
+
+.card.teams
+{
+  width: calc(100% - 400px);
+  width: 700px;
+}
+
+.card .card_header
+{
+  width: 100%;
+  height: 50px;
+  padding: 0 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--d_black);
+  color: var(--purple);
+}
+
+
+.card .card_header a.btn_start_game,
+.card .card_header a.btn_reset_teams
+{
+  outline: 1px solid var(--purple);
+  outline-offset: -15px;
+  cursor: pointer;
+  transition: 300ms ease-in-out;
+}
+
+.card .card_header a.btn_start_game:hover,
+.card .card_header a.btn_reset_teams:hover
+{
+  outline-offset: 5px;
+}
+
+.card.players table
+{
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.card.players table tr
+{
+  height: 75px;
+  width: 100%;
+}
+
+.card.players table tr.ready
+{
+  color: var(--purple);
+  border-bottom: 2px solid var(--purple);
+}
+
+.card.players table tr.ready .fa-spinner
+{
+  display: none;
+}
+
+.card.players table tr.waiting
+{
+  color: var(--l_white);
+  border-bottom: 2px solid var(--l_white);
+}
+
+.card.players table tr.waiting .fa-check
+{
+  display: none;
+}
+
+.card.players table tr td
+{
+  padding: 0 30px;
+  font-size: 1.1rem;
+}
+
+.card.players table tr td:first-child
+{
+  width: 75%;
+}
+
+.card table i.fa-spinner
+{
+  animation: rotate 800ms linear infinite;
+}
+
+.card.teams table
+{
+  table-layout: fixed;
+  width: 100%;
+}
+
+.card.teams table tr
+{
+  height: 75px;
+}
+
+.card.teams table td
+{
+  text-align: center;
+  color: var(--l_white);
+}
+
+.card.teams table th
+{
+  text-align: center;
+  color: var(--purple);
+}
+
+.card.teams input[type=checkbox]
+{
+  display: none;
+}
+
+.card.teams i
+{
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--l_white);
+}
+.card.teams table tr td i:hover
+{
+  color: var(--d_white);
+}
+
+.card.teams input[type=checkbox]:checked ~ i
+{
+  color: var(--purple);
+}
+
+@keyframes rotate
+{
+  from{ transform: rotate(0deg);}
+  to{ transform: rotate(360deg);}
+}
+
+.card.teams
+{
+  position: relative;
+}
+
+.overlay
+{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--l_white);
+  opacity: 0.4;
+}
+
+table.non_admin_view
+{
+  border-collapse: collapse;
+
+}
+
+table.non_admin_view tr
+{
+  border-bottom: 2px solid white;
+}

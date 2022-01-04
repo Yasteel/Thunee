@@ -1,0 +1,73 @@
+.wrapper .body
+{
+	display: grid;
+	place-items: center;
+}
+
+.wrapper .body .controls
+{
+	width: 550px;
+	height: auto;
+	padding: 75px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+	background: var(--d_black);
+	box-shadow: 0 0 15px 0 var(--purple);
+	border-radius: 5px;
+}
+
+.controls > *
+{
+	width: 300px;
+	height: 50px;
+}
+
+.controls input
+{
+	padding: 0 15px;
+	background: none;
+	color: var(--l_white);
+	border: 1px solid var(--purple);
+	transition: border-left 300ms ease-in-out;
+}
+
+.controls input:focus
+{
+	border-left-width: 10px;
+	color: white;
+}
+
+.controls .btn
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid var(--purple);
+	color: white;
+	position: relative;
+	cursor: pointer;
+	z-index: 0;
+}
+
+.controls .btn span.grow
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	transform: scaleX(0);
+	opacity: 0.5;
+	background: var(--purple);
+	transition:  300ms ease-in;
+	transform-origin: left;
+}
+
+.controls .btn:hover span.grow
+{
+	transform: scaleX(1);
+}

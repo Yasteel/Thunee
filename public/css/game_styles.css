@@ -1,0 +1,308 @@
+.wrapper .body
+{
+  display: flex;
+  background: var(--d_green);
+}
+
+.wrapper .body > section
+{
+  height: 100%;
+}
+
+section.main
+{
+  display: grid;
+  grid-template-areas: '_tob         _top        _ttb'
+                       '_left        _area       _right'
+                       '_bottom      _bottom     _bottom';
+
+  grid-template-columns: 350px 480px 350px;
+  grid-template-rows: 200px 200px 250px;
+  width: calc(100% - 300px);
+  padding: 1rem 1.8rem;
+}
+
+section.side
+{
+  width: 300px;
+  background: var(--d_black);
+}
+
+section.main > div
+{
+  border: 1px solid var(--purple);
+  /* color: lime; */
+
+}
+
+.main .team_one_balls { grid-area: _tob; position: relative;}
+
+.main .player_top { grid-area: _top; }
+
+.main .team_two_balls { grid-area: _ttb; position: relative; }
+
+.main .player_left { grid-area: _left; }
+
+.main .player_right { grid-area: _right; }
+
+.main .play_area { grid-area: _area; }
+
+.main .player_bottom { grid-area: _bottom; }
+
+/* --------Ball Cards Styling-------- */
+.main .ballcards
+{
+  position: absolute;
+  top: 20px;
+  background: white;
+  width: 80px;
+  height: 110px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  grid-template-columns: repeat(2, 40px);
+  grid-template-rows: repeat(3, 36px);
+  font-size: 32px;
+  transition: transform 350ms ease-in-out;
+}
+
+.main .team_one_balls .ballcards
+{
+  left: 20px;
+}
+
+.main .team_two_balls .ballcards
+{
+  right: 20px;
+}
+
+.ballcards:first-child
+{
+  z-index: 1;
+}
+
+.ballcards:last-child
+{
+  z-index: 2;
+}
+
+.ballcards[data-face="diamonds"],
+.ballcards[data-face="hearts"]
+{ color: red; }
+
+.ballcards[data-face="spades"],
+.ballcards[data-face="clubs"]
+{ color: black; }
+
+.ballcards.front,
+.player_cards .card
+{
+  background: rgb(152,3,252);
+  background: radial-gradient(circle, rgba(152,3,252,1) 0%, rgba(25,25,25,1) 13%, rgba(152,3,252,1) 23%, rgba(25,25,25,1) 33%, rgba(152,3,252,1) 43%, rgba(25,25,25,1) 53%, rgba(152,3,252,1) 63%, rgba(25,25,25,1) 73%, rgba(152,3,252,1) 83%, rgba(25,25,25,1) 93%);
+}
+.ballcards.front p { display: none }
+
+.team_one_balls .ballcards[data-score="1"] { transform: rotate(45deg) translateY(0) translateX(15px); }
+.team_two_balls .ballcards[data-score="1"] { transform: rotate(-45deg) translateY(0) translateX(-15px); }
+
+.ballcards[data-score="2"] { transform: translateY(40px); }
+
+.team_one_balls .ballcards[data-score="3"] { transform: translateX(50%); }
+.team_two_balls .ballcards[data-score="3"] { transform: translateX(-50%); }
+
+.ballcards[data-score="4"] { transform: translateY(80px); }
+
+.team_one_balls .ballcards[data-score="5"] { transform: translateX(50%) translateY(80px); }
+.team_two_balls .ballcards[data-score="5"] { transform: translateX(-50%) translateY(80px); }
+
+.team_one_balls .ballcards[data-score="6"] { transform: translateX(100%); }
+.team_two_balls .ballcards[data-score="6"] { transform: translateX(-100%); }
+/* --------Ball Cards Styling-------- */
+
+.player_top,
+.player_left,
+.player_right
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  font-size: .7rem;
+  color: var(--d_white);
+}
+
+.player_cards
+{
+  display: flex;
+  flex-direction: row;
+  gap: .5rem;
+}
+
+.player_cards .card
+{
+  width: 40px;
+  height: 55px;
+  border-radius: 8px;
+  border: 1px solid black;
+}
+
+.play_area
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: .7rem;
+}
+
+.play_area .card
+{
+  width: 90px;
+  height: 132px;
+  border-radius: 8px;
+  background: var(--d_white);
+}
+
+.play_area .card.empty
+{
+  background: black;
+}
+
+.play_area .card.empty .desc,
+.play_area .card.empty .suit
+{
+  display: none;
+}
+
+.play_area .card.r,
+.play_area .card.b
+{
+  display: flex;
+  flex-direction: column;
+}
+
+.play_area .card .desc
+{
+  height: 50px;
+  font-size: 28px;
+  padding: .7rem;
+}
+
+.play_area .card .suit
+{
+  height: 82px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.play_area .card .suit img
+{
+  width: 52px;
+}
+
+
+
+.player_bottom
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player_bottom .my_cards
+{
+  display: flex;
+  flex-direction: row;
+  gap: .7rem;
+}
+
+.player_bottom .my_cards .card
+{
+  width: 104px;
+  height: 143px;
+  border-radius: 8px;
+  border: none;
+  border: 1px solid black;
+  background: var(--d_white);
+  display: flex;
+  flex-direction: column;
+}
+
+.player_bottom .my_cards .card > div
+{
+  width: 100%;
+  display: flex;
+}
+
+.player_bottom .my_cards .card .desc
+{
+  height: 51px;
+  align-items: center;
+  font-size: 2.5rem;
+  padding: .9rem;
+}
+
+.player_bottom .my_cards .card.r .desc,
+.play_area .card.r .desc
+{
+  color: red;
+}
+
+.player_bottom .my_cards .card.b .desc,
+.play_area .card.b .desc
+{
+  color: black;
+}
+
+.player_bottom .my_cards .card .suit
+{
+  height: 92px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.player_bottom .my_cards .card .suit img
+{
+  width: 72px;
+}
+
+
+.player_bottom .my_cards .card:focus,
+.player_bottom .my_cards .card:hover
+{
+  box-shadow: 0 0 8px 4px var(--purple);
+  border: 1px solid var(--purple);
+  cursor: pointer;
+}
+
+.player_bottom .calls
+{
+  display: flex;
+  flex-direction: row;
+  gap: .7rem;
+}
+
+.player_bottom .calls a
+{
+  padding: .4rem .8rem;
+  background: var(--d_white);
+  color: var(--d_black);
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.player_bottom .calls a:hover,
+.player_bottom .calls a:focus
+{
+  background: var(--l_white);
+}
+
+
+i.fas.fa-square { transform: rotate(45deg); }
