@@ -1,13 +1,17 @@
+var socket = io();
 var team_one = [];
 var team_two = [];
-var players = ['Yasteel', 'Akshay', 'Madhir'];
+var players = [];
 var view = 0;
+
 
 $(document).ready(function()
 {
   display_teams_view();
   display_players();
 });
+
+
 
 $(document).on('click', '.checkbox_icon', function()
 {
@@ -111,11 +115,9 @@ function reset_teams()
 {
   team_one = [];
   team_two = [];
-
   $('.teams .card_body table tr td i:not(.fa-spinner)').removeClass('fa-check-square');
   $('.teams .card_body table tr td i:not(.fa-spinner)').addClass('fa-square');
   $('.teams .card_body table tr td input').attr('checked', false);
-
 }
 
 function display_teams_view()

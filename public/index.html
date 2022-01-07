@@ -8,7 +8,6 @@
     <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <link rel="stylesheet" type="text/css" href="css/presets.css">
-    <script type="text/javascript" src="js/script.js"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -18,10 +17,12 @@
       <div class="body">
         <div class="controls">
           <input type="text" id="username" placeholder="Enter Username">
-          <input type="text" id="game_id" placeholder="Enter Lobby ID">
-          <a class="btn" id="btn_game"><span class="btn_text">Create/Join Game</span><span class="grow"></span></a>
+          <input type="text" id="lobby" placeholder="Enter Lobby ID">
+          <a class="btn" id="btn_join_game"><span class="btn_text">Create/Join Game</span><span class="grow"></span></a>
         </div>
       </div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>
