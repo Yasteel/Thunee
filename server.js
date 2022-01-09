@@ -19,23 +19,45 @@ io.on('connection', (socket) =>
 {
   console.log(`New User has connected with ID: ${socket.id}`);
 
-  socket.on('join_lobby', (data, callback) =>
+  socket.on('check_lobby', (data, callback) =>
   {
-    socket.join(data.lobby);
-    callback({
-      message: `Join Lobby ${data.lobby} with Socket ID: ${socket.id}`
-    });
+    // username = data.username;
+    let obj =
+    {
+      status: 0,
+      message: `${data.username} Joined Lobby: ${data.lobby}`
+    };
+    // Status 0 - Joined Lobby
+    // Status 1 - Username Taken
+    // Status 2 - Lobby Full
+
+    switch (check_lobby(data.username, data.lobby))
+    {
+      case '0':
+          lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
+        break;
+      case '1':
+          lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
+        break;
+      case '2':
+          let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
+          lobby[idx].no_users++;
+          lobby[idx].players.push(data.username);
+        break;
+      case '3':
+          obj.status = 1;
+          obj.message = "Username is taken. Please choose another."
+        break;
+      case '4':
+          obj.status = 2;
+          obj.message = "Lobby is Full.";
+        break;
+    }
+    console.log(lobby);
+    callback(obj);
   });
 
-  socket.on('send_to_all', (message) =>
-  {
-    io.emit('new_message', message);
-  });
 
-  socket.on('send_to_lobby', (data) =>
-  {
-    io.in(data.lobby).emit('new_message', data.message);
-  });
 
   socket.on('leave_lobby', (room) =>
   {
@@ -96,31 +118,16 @@ Lobby Array
 
 */
 
-/*
-socket.on('join_game', (data) =>
-{
-  username = data.username;
 
-  switch (check_lobby(data.username, data.lobby))
-  {
-    case '0':
-        lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
-      break;
-    case '1':
-        lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
-      break;
-    case '2':
-        let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
-        lobby[idx].no_users++;
-        lobby[idx].players.push(data.username);
-      break;
-    case '3':
-        socket.emit('lobby_error', "Username is taken. Please choose another.");
-      break;
-    case '4':
-        socket.emit('lobby_error', "Lobby is Full.");
-      break;
-  }
-  console.log(lobby);
+/*
+socket.on('send_to_all', (message, callback) =>
+{
+  io.emit('new_message', message);
+  callback({status: 'Message Sent'});
+});
+
+socket.on('send_to_lobby', (data) =>
+{
+  io.in(data.lobby).emit('new_message', data.message);
 });
 */

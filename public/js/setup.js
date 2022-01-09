@@ -7,8 +7,8 @@ var view = 0;
 
 $(document).ready(function()
 {
-  display_teams_view();
-  display_players();
+  // display_teams_view();
+  // display_players();
 });
 
 

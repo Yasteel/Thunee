@@ -1,18 +1,20 @@
 var socket = io();
 
-$(document).on('click', '.btn', function()
-{
-  socket.emit('test', 'Test Message');
-});
-
 $(document).on('click', '#btn_join_game', function()
 {
   let username = $('#username').val();
   let lobby = $('#lobby').val();
 
-  socket.emit('join_lobby', {username, lobby}, (response) =>
+  socket.emit('check_lobby', {username, lobby}, (response) =>
   {
-    console.log(response.message);
+    if(response.status != 0)
+    {
+      console.log(response.message);
+    }
+    else
+    {
+      window.location.href = "lobby.html";
+    }
   });
 });
 
@@ -21,17 +23,16 @@ function leave_lobby(username)
   socket.emit('leave_lobby', username);
 }
 
-function send_to_lobby(message, lobby)
-{
-  socket.emit('send_to_lobby', ({message, lobby}));
-}
-
-function send_to_all(room)
-{
-  socket.emit('send_to_all', room);
-}
-
 socket.on('new_message', (message) =>
 {
   console.log(message);
 });
+
+
+// function send_to_all(room)
+// {
+//   socket.emit('send_to_all', room, (response) =>
+//   {
+//     console.log(response.status);
+//   });
+// }
