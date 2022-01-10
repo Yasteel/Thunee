@@ -140,3 +140,6 @@ socket.on('send_to_lobby', (data) =>
   io.in(data.lobby).emit('new_message', data.message);
 });
 */
+
+// TODO: on disconnect  - remove clients from lobby
+// TODO:                - if everyone leaves, delete that part of the lobby array
