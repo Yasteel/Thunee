@@ -3,12 +3,13 @@ var team_one = [];
 var team_two = [];
 var players = [];
 var view = 0;
-
+var user_data;
 
 $(document).ready(function()
 {
   // display_teams_view();
   // display_players();
+  join_lobby();
 });
 
 
@@ -282,3 +283,19 @@ function display_players()
 
   display_teams_view();
 }
+
+//Communicate with Server
+
+function join_lobby()
+{
+  user_data = JSON.parse(sessionStorage.getItem('user_data'));
+  socket.emit('join_lobby', user_data.lobby);
+}
+
+socket.on('new_user', (lobby_players) =>
+{
+  console.log(lobby_players);
+  players = lobby_players;
+  display_players();
+  display_teams_view();
+});

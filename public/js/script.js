@@ -9,10 +9,11 @@ $(document).on('click', '#btn_join_game', function()
   {
     if(response.status != 0)
     {
-      console.log(response.message);
+      alert(response.message);
     }
     else
     {
+      sessionStorage.setItem('user_data', JSON.stringify({"username": username, "lobby": lobby}));
       window.location.href = "lobby.html";
     }
   });

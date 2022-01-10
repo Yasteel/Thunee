@@ -57,7 +57,16 @@ io.on('connection', (socket) =>
     callback(obj);
   });
 
+  socket.on('join_lobby', (user_lobby) =>
+  {
+    socket.join(user_lobby);
 
+    let lobby_idx = lobby.findIndex(index => index.lobby_name == user_lobby);
+
+    io.in(user_lobby).emit('new_user', lobby[lobby_idx].players);
+    // socket.emit('new_user', lobby[lobby_idx].players);
+    console.log(`Test: ${lobby[lobby_idx].players}`);
+  });
 
   socket.on('leave_lobby', (room) =>
   {

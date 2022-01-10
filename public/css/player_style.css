@@ -188,13 +188,13 @@ section.main .card
   opacity: 0.4;
 }
 
-table.non_admin_view
+table.non_admin
 {
   border-collapse: collapse;
 
 }
 
-table.non_admin_view tr
+table.non_admin tr
 {
   border-bottom: 2px solid white;
 }
