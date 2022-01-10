@@ -26,7 +26,8 @@ $(document).on('click', '.btn_reset_teams', function()
 
 $(document).on('click', '.overlay', function()
 {
-  showAlert('Cannot Set Up Teams Till All Players are in Lobby', 2);
+  let reason = $('.overlay').data('reason') == "0" ? 'Cannot Set Up Teams Till All Players are in Lobby' : 'You are not admin';
+  showAlert(reason, 2);
 });
 
 function valid_teams(element, player_index, team)
@@ -173,12 +174,20 @@ function display_teams_view()
     </div>
     `;
 
-    if(players.length < 4)
+    if(players.length < 4 && user_data.username == players[0])
     {
-      teams += `<div class="overlay"></div>`;
+      teams += `<div class="overlay" data-reason="0"></div>`;
     }
+    else if(user_data.username != players[0])
+    {
+      teams += `<div class="overlay" data-reason="1"></div>`;
+      $('.card.teams').addClass('non_admin');
+    }
+
     $('.card.teams').html('');
     $('.card.teams').append(teams);
+
+
   }
   else if(view == 1)
   {

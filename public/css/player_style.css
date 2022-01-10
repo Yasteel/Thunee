@@ -188,13 +188,18 @@ section.main .card
   opacity: 0.4;
 }
 
-table.non_admin
+.card.teams.non_admin .card_header a
+{
+  display: none;
+}
+
+.card.teams.non_admin table
 {
   border-collapse: collapse;
 
 }
 
-table.non_admin tr
+.card.teams.non_admin table tr
 {
   border-bottom: 2px solid white;
 }
