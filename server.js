@@ -21,7 +21,6 @@ io.on('connection', (socket) =>
 
   socket.on('check_lobby', (data, callback) =>
   {
-    // username = data.username;
     let obj =
     {
       status: 0,
@@ -57,15 +56,18 @@ io.on('connection', (socket) =>
     callback(obj);
   });
 
-  socket.on('join_lobby', (user_lobby) =>
+  socket.on('join_lobby', (data) =>
   {
-    socket.join(user_lobby);
+    let lobby_idx = lobby.findIndex(index => index.lobby_name == data.lobby);
+    socket.join(data.lobby);
+    io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
+    socket.to(data.lobby).emit('new_message', {"username": "admin", "text": data.username});
 
-    let lobby_idx = lobby.findIndex(index => index.lobby_name == user_lobby);
+  });
 
-    io.in(user_lobby).emit('new_user', lobby[lobby_idx].players);
-    // socket.emit('new_user', lobby[lobby_idx].players);
-    console.log(`Test: ${lobby[lobby_idx].players}`);
+  socket.on('send_message', (message) =>
+  {
+    io.in(message.lobby).emit('new_message', {"username": message.username, "text": message.text});
   });
 
   socket.on('leave_lobby', (room) =>

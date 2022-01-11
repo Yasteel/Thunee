@@ -1,11 +1,12 @@
 .wrapper .body
 {
   display: flex;
+  padding: 1rem;
 }
 
 .wrapper .body > section
 {
-  height: 100%;
+  height: 99%;
 }
 
 section.main
@@ -22,7 +23,6 @@ section.main
 section.side
 {
   width: 400px;
-  background: var(--d_black);
 }
 
 section.main .card
@@ -196,10 +196,117 @@ section.main .card
 .card.teams.non_admin table
 {
   border-collapse: collapse;
-
 }
 
 .card.teams.non_admin table tr
 {
   border-bottom: 2px solid white;
+}
+
+/* ==================================Styles for chat================================== */
+.message_wrapper
+{
+  border: 1px solid var(--purple);
+  width: 400px;
+  height: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.message_wrapper .messages
+{
+  width: 100%;
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+.message
+{
+  padding: 10px 20px;
+  margin: .5rem 0;
+  width: 100%;
+}
+
+.message.from
+{
+  background: var(--l_white);
+  color: var(--l_black);
+  border-radius: 15px 15px 0 15px;
+}
+
+.message.to
+{
+  background: var(--purple);
+  color: var(--l_white);
+  border-radius: 15px 15px 15px 0;
+}
+
+.message.admin
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.message.admin p
+{
+  padding: .3rem 1rem;
+  border: 2px solid var(--purple);
+  color: var(--purple);
+  border-radius: 20px;
+  user-select: none;
+}
+
+
+
+.message .m_header
+{
+  font-weight: 600;
+  text-transform: capitalize;
+
+}
+
+.message .m_body
+{
+  font-weight: 500;
+  text-transform: capitalize;
+
+}
+
+.message_wrapper .text
+{
+  width: 100%;
+  height: 50px;
+  display: flex;
+  /* gap: .3rem; */
+}
+
+.message_wrapper .text input
+{
+  padding: 0 .5rem 0 1rem;
+  background: none;
+  border: 1px solid var(--purple);
+  color: var(--l_white);
+}
+
+.message_wrapper .text button
+{
+  width: 100px;
+  background: var(--purple);
+  color: var(--l_white);
+  border: none;
+  cursor: pointer;
+  transition: 600ms ease-in-out;
+}
+
+.message_wrapper .text button:focus,
+.message_wrapper .text button:hover
+{
+  color: black;
+  /* background: var(--l_purple); */
 }

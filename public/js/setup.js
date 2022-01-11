@@ -4,15 +4,13 @@ var team_two = [];
 var players = [];
 var view = 0;
 var user_data;
+var messageContainer = document.getElementsByClassName('messages')[0];
+
 
 $(document).ready(function()
 {
-  // display_teams_view();
-  // display_players();
   join_lobby();
 });
-
-
 
 $(document).on('click', '.checkbox_icon', function()
 {
@@ -28,6 +26,20 @@ $(document).on('click', '.overlay', function()
 {
   let reason = $('.overlay').data('reason') == "0" ? 'Cannot Set Up Teams Till All Players are in Lobby' : 'You are not admin';
   showAlert(reason, 2);
+});
+
+$(document).on('click', '.text button.btn_send', function()
+{
+  send_message();
+  $('.msg_text').focus();
+});
+
+$(document).on('keypress', '.msg_text', function(e)
+{
+  if(e.key == "Enter")
+  {
+    $('.text button.btn_send').click();
+  }
 });
 
 function valid_teams(element, player_index, team)
@@ -298,13 +310,60 @@ function display_players()
 function join_lobby()
 {
   user_data = JSON.parse(sessionStorage.getItem('user_data'));
-  socket.emit('join_lobby', user_data.lobby);
+  socket.emit('join_lobby', user_data);
+}
+
+function send_message()
+{
+  var message = $('.msg_text').val();
+  if(message.trim())
+  {
+    var message_obj =
+    {
+      "username": user_data.username,
+      "lobby": user_data.lobby,
+      "text": message
+    };
+    socket.emit('send_message', message_obj);
+    $('.msg_text').val('');
+  }
+  else
+  {
+    showAlert('Cannot Send Empty Message', 2);
+  }
+}
+
+function display_message(username, text)
+{
+  let message = '';
+
+  if(username == 'admin')
+  {
+    message = `  <div class="message admin"><p>${text} Joined</p></div>`;
+  }
+  else
+  {
+    message =
+    `
+    <div class="message ${username == user_data.username ? " to" : " from"}">
+      <div class="m_header"><p>${username}</p></div>
+      <div class="m_body"><p>${text}</p></div>
+    </div>
+    `;
+  }
+
+  $('.message_wrapper .messages').append(message);
+    messageContainer.scrollTop = messageContainer.scrollHeight
 }
 
 socket.on('new_user', (lobby_players) =>
 {
-  console.log(lobby_players);
   players = lobby_players;
   display_players();
   display_teams_view();
+});
+
+socket.on('new_message', (message) =>
+{
+  display_message(message.username, message.text);
 });
