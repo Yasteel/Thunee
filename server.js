@@ -10,6 +10,8 @@ const io = socketio(server);
 const port = process.env.PORT || 3000;
 const static_path = path.join(__dirname, 'public');
 
+const { instrument } = require('@socket.io/admin-ui');
+
 var username = '';
 var lobby = [];
 
@@ -132,18 +134,21 @@ function remove_user(socket)
   {
     let player_idx = lobby[lobby_idx].players.findIndex(index => index.socket_id == socket.id);
 
+    socket.to(lobby[lobby_idx].lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
 
     if(lobby[lobby_idx].players.length > 1)
     {
       socket.leave(lobby[lobby_idx].lobby_name);
       lobby[lobby_idx].players.splice(player_idx, 1);
       lobby[lobby_idx].no_users--;
-      socket.to(lobby[lobby_idx].lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
+
       io.in(lobby[lobby_idx].lobby_name).emit('new_user', lobby[lobby_idx].players);
     }
     else if(lobby[lobby_idx].players.length == 1)
     {
-
+      socket.leave(lobby[lobby_idx].lobby_name);
+      lobby.splice(lobby_idx, 1);
+      console.log(lobby);
     }
   }
 }
