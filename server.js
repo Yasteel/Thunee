@@ -175,6 +175,4 @@ Lobby Array
 */
 
 
-// TODO: on disconnect  - remove clients from lobby
-// TODO:                - if everyone leaves, delete that part of the lobby array
 // TODO: array.splice(index, no_of_items);

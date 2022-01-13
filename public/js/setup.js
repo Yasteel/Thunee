@@ -136,125 +136,66 @@ function reset_teams()
 
 function display_teams_view()
 {
-  if(view == 0)
+  let teams =
+  `
+  <div class="card teams ${user_data.username != players[0] ? "non_admin": "admin"}">
+  <div class="card_header">
+    <h2>Teams</h2>
+    <a class="btn_reset_teams">Reset Teams</a>
+    <a class="btn_start_game">Start Game</a>
+  </div>
+  <div class="card_body">
+    <table>
+      <tr>
+        <td></td>
+  `;
+
+  for(let i=0; i<4; i++)
   {
-    let teams =
-    `
-    <div class="card_header">
-      <h2>Teams</h2>
-      <a class="btn_reset_teams">Reset Teams</a>
-      <a class="btn_start_game">Start Game</a>
-    </div>
-    <div class="card_body">
-      <table>
-        <tr>
-          <td></td>
-    `;
-
-    for(let i=0; i<4; i++)
-    {
-      teams += players[i] ? `<td>${players[i]}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
-    }
-    teams +=
-    `
-    </tr>
-    <tr id="team_one">
-      <td>Team 1</td>
-    `;
-
-    for(let i=0; i<4; i++)
-    {
-      teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
-    }
-
-    teams +=
-    `
-    </tr>
-    <tr id="team_two">
-      <td>Team 2</td>
-    `;
-
-    for(let i=0; i<4; i++)
-    {
-      teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
-    }
-
-    teams +=
-    `
-        </tr>
-      </table>
-    </div>
-    `;
-
-    if(players.length < 4 && user_data.username == players[0])
-    {
-      teams += `<div class="overlay" data-reason="0"></div>`;
-    }
-    else if(user_data.username != players[0])
-    {
-      teams += `<div class="overlay" data-reason="1"></div>`;
-      $('.card.teams').addClass('non_admin');
-    }
-
-    $('.card.teams').html('');
-    $('.card.teams').append(teams);
-
-
+    teams += players[i] ? `<td>${players[i]}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
   }
-  else if(view == 1)
+  teams +=
+  `
+  </tr>
+  <tr id="team_one">
+    <td>Team 1</td>
+  `;
+
+  for(let i=0; i<4; i++)
   {
-    let teams =
-    `
-    <div class="card_header">
-      <h2>Teams</h2>
-    </div>
-    <div class="card_body">
-      <table class="non_admin_view">
-        <tr>
-          <th>Team 1</th>
-    `;
-
-    for(let i=0; i<2; i++)
-    {
-      if(team_one[i])
-      {
-        teams += `<td>${team_one[i]}</td>`;
-      }
-      else
-      {
-        teams += `<td><i class="fas fa-spinner"></i></td>`;
-      }
-    }
-
-    teams +=
-    `
-    </tr>
-    <tr>
-      <th>Team 2</th>
-    `;
-
-    for(let i=0; i<2; i++)
-    {
-      if(team_two[i])
-      {
-        teams += `<td>${team_two[i]}</td>`;
-      }
-      else
-      {
-        teams += `<td><i class="fas fa-spinner"></i></td>`;
-      }
-    }
-
-    teams +=
-    `
-        </tr>
-      </table>
-    </div>
-    `;
-
-    $('.card.teams').html('');
-    $('.card.teams').append(teams);
+    teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
   }
+
+  teams +=
+  `
+  </tr>
+  <tr id="team_two">
+    <td>Team 2</td>
+  `;
+
+  for(let i=0; i<4; i++)
+  {
+    teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
+  }
+
+  teams +=
+  `
+      </tr>
+    </table>
+  </div>
+  `;
+
+  if(players.length < 4 && user_data.username == players[0])
+  {
+    teams += `<div class="overlay" data-reason="0"></div>`;
+  }
+  else if(user_data.username != players[0])
+  {
+    teams += `<div class="overlay" data-reason="1"></div></div>`;
+  }
+
+  $('.card.teams').html('');
+  $('.card.teams').replaceWith(teams);
 
 }
 
@@ -368,6 +309,7 @@ function display_message(username, text)
 socket.on('new_user', (lobby_players) =>
 {
   players = object_cleanup(lobby_players);
+  console.log(players);
   display_players();
   display_teams_view();
 });
