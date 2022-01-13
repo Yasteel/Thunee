@@ -15,7 +15,7 @@ $(document).on('click', '#btn_join_game', function()
     {
       if(response.status != 0)
       {
-        alert(response.message);
+        showAlert(response.message, 2);
       }
       else
       {
@@ -39,16 +39,7 @@ function leave_lobby(username)
   socket.emit('leave_lobby', username);
 }
 
-socket.on('new_message', (message) =>
-{
-  console.log(message);
-});
-
-
-// function send_to_all(room)
+// socket.on('new_message', (message) =>
 // {
-//   socket.emit('send_to_all', room, (response) =>
-//   {
-//     console.log(response.status);
-//   });
-// }
+//   console.log(message);
+// });
