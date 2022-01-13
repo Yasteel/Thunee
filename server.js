@@ -81,6 +81,21 @@ io.on('connection', (socket) =>
     io.in(message.lobby).emit('new_message', {"username": message.username, "text": message.text});
   });
 
+  socket.on('team_info', (obj) =>
+  {
+    socket.to(obj.lobby).emit('new_teams', { "element": obj.element, "player_index": obj.player_index, "team": obj.team });
+  });
+
+  socket.on('reset_teams', (lobby) =>
+  {
+    socket.to(lobby).emit('reset_teams');
+  });
+
+  socket.on('start_game', (lobby) =>
+  {
+    socket.in(lobby).emit('start_game');
+  });
+
   socket.on('leave_lobby', (room) =>
   {
     socket.leave(room);
@@ -148,7 +163,6 @@ function remove_user(socket)
     {
       socket.leave(lobby[lobby_idx].lobby_name);
       lobby.splice(lobby_idx, 1);
-      console.log(lobby);
     }
   }
 }
