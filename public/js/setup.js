@@ -333,13 +333,22 @@ function send_message()
   }
 }
 
+function object_cleanup(lobby_players)
+{
+  let clean_arr = [];
+  lobby_players.forEach((item, i) => {
+    clean_arr.push(item.username);
+  });
+  return clean_arr;
+}
+
 function display_message(username, text)
 {
   let message = '';
 
   if(username == 'admin')
   {
-    message = `  <div class="message admin"><p>${text} Joined</p></div>`;
+    message = `  <div class="message admin"><p>${text}</p></div>`;
   }
   else
   {
@@ -358,7 +367,7 @@ function display_message(username, text)
 
 socket.on('new_user', (lobby_players) =>
 {
-  players = lobby_players;
+  players = object_cleanup(lobby_players);
   display_players();
   display_teams_view();
 });

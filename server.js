@@ -10,10 +10,17 @@ const io = socketio(server);
 const port = process.env.PORT || 3000;
 const static_path = path.join(__dirname, 'public');
 
+const { instrument } = require('@socket.io/admin-ui');
+
 var username = '';
 var lobby = [];
 
 app.use(express.static(static_path));
+
+server.listen(port, () =>
+{
+  console.log(`Listening on Port: ${port}`);
+});
 
 io.on('connection', (socket) =>
 {
@@ -33,24 +40,24 @@ io.on('connection', (socket) =>
     switch (check_lobby(data.username, data.lobby))
     {
       case '0':
-          lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
-        break;
+      lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      break;
       case '1':
-          lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [data.username]});
-        break;
+      lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      break;
       case '2':
-          let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
-          lobby[idx].no_users++;
-          lobby[idx].players.push(data.username);
-        break;
+      let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
+      lobby[idx].no_users++;
+      lobby[idx].players.push({'username': data.username, 'socket_id': ''});
+      break;
       case '3':
-          obj.status = 1;
-          obj.message = "Username is taken. Please choose another."
-        break;
+      obj.status = 1;
+      obj.message = "Username is taken. Please choose another."
+      break;
       case '4':
-          obj.status = 2;
-          obj.message = "Lobby is Full.";
-        break;
+      obj.status = 2;
+      obj.message = "Lobby is Full.";
+      break;
     }
     console.log(lobby);
     callback(obj);
@@ -61,7 +68,11 @@ io.on('connection', (socket) =>
     let lobby_idx = lobby.findIndex(index => index.lobby_name == data.lobby);
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
-    socket.to(data.lobby).emit('new_message', {"username": "admin", "text": data.username});
+    socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
+
+    //inserts new socket id into player object
+    let player_idx = lobby[lobby_idx].players.findIndex(index => index.username == data.username);
+    lobby[lobby_idx].players[player_idx].socket_id = socket.id;
 
   });
 
@@ -74,11 +85,11 @@ io.on('connection', (socket) =>
   {
     socket.leave(room);
   });
-});
 
-server.listen(port, () =>
-{
-  console.log(`Listening on Port: ${port}`);
+  socket.on('disconnect', () =>
+  {
+    remove_user(socket);
+  });
 });
 
 function check_lobby(username, lobby_name)
@@ -99,7 +110,7 @@ function check_lobby(username, lobby_name)
       if(lobby[idx].no_users < 4)
       {
         // if a lobby was found and is available to join
-        if(lobby[idx].players.findIndex(index => index == username) == -1)
+        if(lobby[idx].players.findIndex(index => index.username == username) == -1)
         {
           return '2'; // if a lobby does not already has a user with the selected username
         }
@@ -116,6 +127,34 @@ function check_lobby(username, lobby_name)
   }
 }
 
+function remove_user(socket)
+{
+  let lobby_idx = lobby.findIndex(idx => idx.players.findIndex(p_idx => p_idx.socket_id == socket.id) > -1);
+  if(lobby_idx > -1)
+  {
+    let player_idx = lobby[lobby_idx].players.findIndex(index => index.socket_id == socket.id);
+
+    socket.to(lobby[lobby_idx].lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
+
+    if(lobby[lobby_idx].players.length > 1)
+    {
+      socket.leave(lobby[lobby_idx].lobby_name);
+      lobby[lobby_idx].players.splice(player_idx, 1);
+      lobby[lobby_idx].no_users--;
+
+      io.in(lobby[lobby_idx].lobby_name).emit('new_user', lobby[lobby_idx].players);
+    }
+    else if(lobby[lobby_idx].players.length == 1)
+    {
+
+    }
+  }
+}
+
+
+
+
+
 
 /*
 Lobby Array
@@ -123,25 +162,17 @@ Lobby Array
   {
     'lobby_name': xxxxxxxxxx,
     'no_users': xxxxxxxxxx,
-    'players': []
+    'players':
+    [
+      'username': xxxxxxxxxx,
+      'socket_id': xxxxxxxxxx
+    ]
   }
 ]
 
 */
 
 
-/*
-socket.on('send_to_all', (message, callback) =>
-{
-  io.emit('new_message', message);
-  callback({status: 'Message Sent'});
-});
-
-socket.on('send_to_lobby', (data) =>
-{
-  io.in(data.lobby).emit('new_message', data.message);
-});
-*/
-
 // TODO: on disconnect  - remove clients from lobby
 // TODO:                - if everyone leaves, delete that part of the lobby array
+// TODO: array.splice(index, no_of_items);
