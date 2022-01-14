@@ -40,10 +40,10 @@ io.on('connection', (socket) =>
     switch (check_lobby(data.username, data.lobby))
     {
       case '0':
-      lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      lobby.push({'lobby_name': data.lobby, 'delete_lobby': false, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
       break;
       case '1':
-      lobby.push({'lobby_name': data.lobby, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      lobby.push({'lobby_name': data.lobby, 'delete_lobby': false, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
       break;
       case '2':
       let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
@@ -162,7 +162,10 @@ function remove_user(socket)
     else if(lobby[lobby_idx].players.length == 1)
     {
       socket.leave(lobby[lobby_idx].lobby_name);
-      lobby.splice(lobby_idx, 1);
+      if(lobby[lobby_idx].delete_lobby)
+      {
+        lobby.splice(lobby_idx, 1);
+      }
     }
   }
 }
@@ -172,11 +175,13 @@ function remove_user(socket)
 
 
 
+// Lobby Object
 /*
 Lobby Array
 [
   {
     'lobby_name': xxxxxxxxxx,
+    'delete_lobby': false,
     'no_users': xxxxxxxxxx,
     'players':
     [
@@ -188,5 +193,6 @@ Lobby Array
 
 */
 
+// array.splice(index, no_of_items);
 
-// TODO: array.splice(index, no_of_items);
+// TODO:
