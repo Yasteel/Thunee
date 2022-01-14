@@ -40,10 +40,10 @@ io.on('connection', (socket) =>
     switch (check_lobby(data.username, data.lobby))
     {
       case '0':
-      lobby.push({'lobby_name': data.lobby, 'delete_lobby': false, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      lobby.push({'lobby_name': data.lobby, 'delete_lobby': true, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
       break;
       case '1':
-      lobby.push({'lobby_name': data.lobby, 'delete_lobby': false, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      lobby.push({'lobby_name': data.lobby, 'delete_lobby': true, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
       break;
       case '2':
       let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
@@ -59,7 +59,6 @@ io.on('connection', (socket) =>
       obj.message = "Lobby is Full.";
       break;
     }
-    console.log(lobby);
     callback(obj);
   });
 
@@ -91,9 +90,12 @@ io.on('connection', (socket) =>
     socket.to(lobby).emit('reset_teams');
   });
 
-  socket.on('start_game', (lobby) =>
+  socket.on('start_game', (lobby_name) =>
   {
-    socket.in(lobby).emit('start_game');
+    console.log('Starting game ...');
+    let lobby_idx = lobby.findIndex(index => index.lobby_name == lobby_name);
+    lobby[lobby_idx].delete_lobby = false;
+    io.in(lobby_name).emit('start_game');
   });
 
   socket.on('leave_lobby', (room) =>

@@ -30,6 +30,7 @@ $(document).on('click', '.btn_reset_teams', function()
 
 $(document).on('click', '.btn_start_game', function()
 {
+  console.log('1');
   start_game();
 });
 
@@ -332,8 +333,10 @@ function send_team_info(element, player_index, team, lobby)
 
 function start_game()
 {
+  console.log('2');
   if(team_one.length == 2 && team_two.length == 2)
   {
+    console.log('3');
     socket.emit('start_game', user_data.lobby);
   }
 }
@@ -363,5 +366,6 @@ socket.on('reset_teams', () =>
 
 socket.on('start_game', () =>
 {
-
+  console.log('4');
+  window.location.href = "thunee.html";
 });
