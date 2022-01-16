@@ -14,11 +14,10 @@ $(document).ready(function()
 
 $(document).on('click', '.checkbox_icon', function()
 {
-  let element = $(this);
   let player_index = $(this).data('player-index');
   let team = $(this).closest('tr').attr('id');
 
-  valid_teams(element, player_index, team);
+  valid_teams(player_index, team);
   send_team_info(element, player_index, team, user_data.lobby);
 });
 
@@ -54,7 +53,7 @@ $(document).on('keypress', '.msg_text', function(e)
   }
 });
 
-function valid_teams(element, player_index, team)
+function valid_teams(player_index, team)
 {
   let player = players[parseInt(player_index)];
   switch(team)
@@ -66,7 +65,6 @@ function valid_teams(element, player_index, team)
       {
         let player_idx = team_two.findIndex(index => index == player);
         team_two.splice(player_idx, 1);
-
         $(`#team_two i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
         $(`#team_two i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
         $(`#team_two i[data-player-index="${player_index}"]`).addClass('fa-square');
@@ -76,7 +74,6 @@ function valid_teams(element, player_index, team)
       {
         let player_idx = team_one.findIndex(index => index == player);
         team_one.splice(player_idx, 1);
-
         $(`#team_one i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
         $(`#team_one i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
         $(`#team_one i[data-player-index="${player_index}"]`).addClass('fa-square');
@@ -102,7 +99,6 @@ function valid_teams(element, player_index, team)
       {
         let player_idx = team_one.findIndex(index => index == player);
         team_one.splice(player_idx, 1);
-
         $(`#team_one i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
         $(`#team_one i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
         $(`#team_one i[data-player-index="${player_index}"]`).addClass('fa-square');
@@ -114,7 +110,6 @@ function valid_teams(element, player_index, team)
       {
         let player_idx = team_two.findIndex(index => index == player);
         team_two.splice(player_idx, 1);
-
         $(`#team_two i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
         $(`#team_two i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
         $(`#team_two i[data-player-index="${player_index}"]`).addClass('fa-square');
@@ -356,7 +351,7 @@ socket.on('new_message', (message) =>
 
 socket.on('new_teams', ({element, player_index, team}) =>
 {
-  valid_teams(element, player_index, team);
+  valid_teams(player_index, team);
 });
 
 socket.on('reset_teams', () =>

@@ -105,6 +105,7 @@ io.on('connection', (socket) =>
 
   socket.on('disconnect', () =>
   {
+    console.log('user disconnected');
     remove_user(socket);
   });
 });
@@ -170,6 +171,7 @@ function remove_user(socket)
       }
     }
   }
+  console.log(lobby);
 }
 
 
