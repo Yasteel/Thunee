@@ -9,7 +9,15 @@ var messageContainer = document.getElementsByClassName('messages')[0];
 
 $(document).ready(function()
 {
-  join_lobby();
+  if(sessionStorage.getItem('first_load'))
+  {
+    reload_lobby();
+  }
+  else
+  {
+    join_lobby();
+    sessionStorage.setItem('first_load', true);
+  }
 });
 
 $(document).on('click', '.checkbox_icon', function()
@@ -260,6 +268,23 @@ function join_lobby()
   user_data = JSON.parse(sessionStorage.getItem('user_data'));
   socket.emit('join_lobby', user_data);
 }
+
+function reload_lobby()
+{
+  user_data = JSON.parse(sessionStorage.getItem('user_data'));
+  socket.emit('check_lobby', user_data, (response) =>
+  {
+    if(response.status != 0)
+    {
+      showAlert(response.message, 2);
+    }
+    else
+    {
+      socket.emit('join_lobby', user_data);
+    }
+  });
+}
+
 
 function send_message()
 {
