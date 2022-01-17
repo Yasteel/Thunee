@@ -1,11 +1,11 @@
 .wrapper .body
 {
-  display: flex;
   background: var(--d_green);
 }
 
 .wrapper .body > section
 {
+  width: 100%;
   height: 100%;
 }
 
@@ -16,23 +16,15 @@ section.main
                        '_left        _area       _right'
                        '_bottom      _bottom     _bottom';
 
-  grid-template-columns: 350px 480px 350px;
-  grid-template-rows: 200px 200px 250px;
-  width: calc(100% - 300px);
+  grid-template-columns: 1fr 1.5fr 1fr;
+  grid-template-rows: 1.2fr 1.2fr 1.7fr;
+  width: 100%;
   padding: 1rem 1.8rem;
-}
-
-section.side
-{
-  width: 300px;
-  background: var(--d_black);
 }
 
 section.main > div
 {
   border: 1px solid var(--purple);
-  /* color: lime; */
-
 }
 
 .main .team_one_balls { grid-area: _tob; position: relative;}
