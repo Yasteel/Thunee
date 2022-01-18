@@ -26,7 +26,7 @@ $(document).on('click', '.checkbox_icon', function()
   let team = $(this).closest('tr').attr('id');
 
   valid_teams(player_index, team);
-  send_team_info(element, player_index, team, user_data.lobby);
+  send_team_info(player_index, team, user_data.lobby);
 });
 
 $(document).on('click', '.btn_reset_teams', function()
@@ -285,7 +285,6 @@ function reload_lobby()
   });
 }
 
-
 function send_message()
 {
   var message = $('.msg_text').val();
@@ -338,11 +337,10 @@ function display_message(username, text)
     messageContainer.scrollTop = messageContainer.scrollHeight
 }
 
-function send_team_info(element, player_index, team, lobby)
+function send_team_info(player_index, team, lobby)
 {
   let obj =
   {
-    "element": element,
     "player_index": player_index,
     "team": team,
     "lobby": lobby
@@ -374,7 +372,7 @@ socket.on('new_message', (message) =>
   display_message(message.username, message.text);
 });
 
-socket.on('new_teams', ({element, player_index, team}) =>
+socket.on('new_teams', ({player_index, team}) =>
 {
   valid_teams(player_index, team);
 });

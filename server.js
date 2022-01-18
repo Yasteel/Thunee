@@ -82,7 +82,7 @@ io.on('connection', (socket) =>
 
   socket.on('team_info', (obj) =>
   {
-    socket.to(obj.lobby).emit('new_teams', { "element": obj.element, "player_index": obj.player_index, "team": obj.team });
+    socket.to(obj.lobby).emit('new_teams', {"player_index": obj.player_index, "team": obj.team });
   });
 
   socket.on('reset_teams', (lobby) =>
