@@ -194,7 +194,32 @@ Lobby Array
     ]
   }
 ]
+*/
 
+// Teams Object
+/*
+Teams Array
+[
+  {
+    'players':
+    [
+      {
+        'name': 'Yasteel',
+        'hands':
+        [
+          {}, {}, {}
+        ],
+        'cards':
+        [
+          {},{},{},{},{},{} // from card object
+        ],
+        'score': 0 //score determined by card value in 'hands' array
+      }
+    ],
+    'score': 0,
+    'counting': false
+  }
+]
 */
 
 // array.splice(index, no_of_items);
