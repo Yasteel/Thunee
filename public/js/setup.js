@@ -13,11 +13,9 @@ $(document).ready(function()
   if(first_load == "false")
   {
     reload_lobby();
-    console.log('1');
   }
   else
   {
-    console.log('2');
     join_lobby();
     sessionStorage.setItem('first_load', true);
   }
