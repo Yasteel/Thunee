@@ -9,12 +9,15 @@ var messageContainer = document.getElementsByClassName('messages')[0];
 
 $(document).ready(function()
 {
-  if(sessionStorage.getItem('first_load'))
+  let first_load = sessionStorage.getItem('first_load');
+  if(first_load == "false")
   {
     reload_lobby();
+    console.log('1');
   }
   else
   {
+    console.log('2');
     join_lobby();
     sessionStorage.setItem('first_load', true);
   }
@@ -355,7 +358,7 @@ function start_game()
   if(team_one.length == 2 && team_two.length == 2)
   {
     console.log('3');
-    socket.emit('start_game', user_data.lobby);
+    socket.emit('start_game', user_data.lobby, team_one, team_two);
   }
 }
 

@@ -5,17 +5,25 @@ const socketio = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const { instrument } = require('@socket.io/admin-ui');
+const io = socketio(server,
+  {
+    cors:
+    {
+      origin: ["https://admin.socket.io"],
+      credentials: true
+    }
+  });
 
 const port = process.env.PORT || 3000;
 const static_path = path.join(__dirname, 'public');
-
-const { instrument } = require('@socket.io/admin-ui');
 
 var username = '';
 var lobby = [];
 
 app.use(express.static(static_path));
+
+instrument(io, {auth: false});
 
 server.listen(port, () =>
 {
@@ -90,11 +98,53 @@ io.on('connection', (socket) =>
     socket.to(lobby).emit('reset_teams');
   });
 
-  socket.on('start_game', (lobby_name) =>
+  socket.on('start_game', (lobby_name, team_one, team_two) =>
   {
     console.log('Starting game ...');
     let lobby_idx = lobby.findIndex(index => index.lobby_name == lobby_name);
     lobby[lobby_idx].delete_lobby = false;
+
+    lobby[lobby_idx].teams =
+    [
+      {
+        'players': [
+          {
+            'id': 1,
+            'name': team_one[0],
+            'cards': {},
+            'hands': {},
+            'score': 0
+          },
+          {
+            'id': 3,
+            'name': team_one[1],
+            'cards': {},
+            'hands': {},
+            'score': 0
+          }],
+        'ball_count': 0,
+        'counting': true
+      },
+      {
+        'players': [
+          {
+            'id': 2,
+            'name': team_two[0],
+            'cards': {},
+            'hands': {},
+            'score': 0
+          },
+          {
+            'id': 4,
+            'name': team_two[1],
+            'cards': {},
+            'hands': {},
+            'score': 0
+          }],
+        'ball_count': 0,
+        'counting': false
+      }
+    ];
     io.in(lobby_name).emit('start_game');
   });
 
@@ -105,7 +155,6 @@ io.on('connection', (socket) =>
 
   socket.on('disconnect', () =>
   {
-    console.log('user disconnected');
     remove_user(socket);
   });
 });
@@ -165,18 +214,17 @@ function remove_user(socket)
     else if(lobby[lobby_idx].players.length == 1)
     {
       socket.leave(lobby[lobby_idx].lobby_name);
+      lobby[lobby_idx].players.splice(player_idx, 1);
+      lobby[lobby_idx].no_users--;
       if(lobby[lobby_idx].delete_lobby)
       {
         lobby.splice(lobby_idx, 1);
       }
     }
   }
+  console.log('user disconnected');
   console.log(lobby);
 }
-
-
-
-
 
 
 // Lobby Object

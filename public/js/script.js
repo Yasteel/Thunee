@@ -15,10 +15,12 @@ $(document).on('click', '#btn_join_game', function()
     {
       if(response.status != 0)
       {
+        console.log(response.status);
         showAlert(response.message, 2);
       }
       else
       {
+        sessionStorage.setItem('first_load', true);
         sessionStorage.setItem('user_data', JSON.stringify({"username": username, "lobby": lobby}));
         window.location.href = "lobby.html";
       }
@@ -33,13 +35,3 @@ $(document).on('keypress', 'input[type="text"]', function(e)
     $('#btn_join_game').click();
   }
 });
-
-function leave_lobby(username)
-{
-  socket.emit('leave_lobby', username);
-}
-
-// socket.on('new_message', (message) =>
-// {
-//   console.log(message);
-// });
