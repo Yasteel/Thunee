@@ -1,0 +1,7 @@
+1. Create Folder Structure
+2. Create Server.js file
+3. npm init
+4. git init
+5. add .gitignore file to root Folder
+6. npm i express
+7. npm i nodemon -- npm run dev - to run the server 

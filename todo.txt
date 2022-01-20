@@ -1,0 +1,234 @@
+==================THUNEE==================
+
+1. Create Cards Object
+  * Cards =
+  [
+    {
+      'id': 0,
+      'suit': 'heart',
+      'value': '9',
+      'description': '9',
+      'short_description': '9',
+      'points': 20,
+    },
+    {
+      'id': 1,
+      'suit': 'heart',
+      'value': '10',
+      'description': '10',
+      'short_description': '10',
+      'points': 10,
+    },
+    {
+      'id': 2,
+      'suit': 'heart',
+      'value': '11',
+      'description': 'Jack',
+      'short_description': 'J',
+      'points': 30,
+    },
+    {
+      'id': 3,
+      'suit': 'heart',
+      'value': '12',
+      'description': 'Queen',
+      'short_description': 'Q',
+      'points': 2,
+    },
+    {
+      'id': 4,
+      'suit': 'heart',
+      'value': '13',
+      'description': 'King',
+      'short_description': 'K',
+      'points': 3,
+    },
+    {
+      'id': 5,
+      'suit': 'heart',
+      'value': '1',
+      'description': 'Ace',
+      'short_description': 'A',
+      'points': 11,
+    },
+    {
+      'id': 6,
+      'suit': 'diamond',
+      'value': '9',
+      'description': '9',
+      'short_description': '9',
+      'points': 20,
+    },
+    {
+      'id': 7,
+      'suit': 'diamond',
+      'value': '10',
+      'description': '10',
+      'short_description': '10',
+      'points': 10,
+    },
+    {
+      'id': 8,
+      'suit': 'diamond',
+      'value': '11',
+      'description': 'Jack',
+      'short_description': 'J',
+      'points': 30,
+    },
+    {
+      'id': 9,
+      'suit': 'diamond',
+      'value': '12',
+      'description': 'Queen',
+      'short_description': 'Q',
+      'points': 2,
+    },
+    {
+      'id': 10,
+      'suit': 'diamond',
+      'value': '13',
+      'description': 'King',
+      'short_description': 'K',
+      'points': 3,
+    },
+    {
+      'id': 11,
+      'suit': 'diamond',
+      'value': '1',
+      'description': 'Ace',
+      'short_description': 'A',
+      'points': 11,
+    },
+    {
+      'id': 12,
+      'suit': 'club',
+      'value': '9',
+      'description': '9',
+      'short_description': '9',
+      'points': 20,
+    },
+    {
+      'id': 13,
+      'suit': 'club',
+      'value': '10',
+      'description': '10',
+      'short_description': '10',
+      'points': 10,
+    },
+    {
+      'id': 14,
+      'suit': 'club',
+      'value': '11',
+      'description': 'Jack',
+      'short_description': 'J',
+      'points': 30,
+    },
+    {
+      'id': 15,
+      'suit': 'club',
+      'value': '12',
+      'description': 'Queen',
+      'short_description': 'Q',
+      'points': 2,
+    },
+    {
+      'id': 16,
+      'suit': 'club',
+      'value': '13',
+      'description': 'King',
+      'short_description': 'K',
+      'points': 3,
+    },
+    {
+      'id': 17,
+      'suit': 'club',
+      'value': '1',
+      'description': 'Ace',
+      'short_description': 'A',
+      'points': 11,
+    },
+    {
+      'id': 18,
+      'suit': 'spade',
+      'value': '9',
+      'description': '9',
+      'short_description': '9',
+      'points': 20,
+    },
+    {
+      'id': 19,
+      'suit': 'spade',
+      'value': '10',
+      'description': '10',
+      'short_description': '10',
+      'points': 10,
+    },
+    {
+      'id': 20,
+      'suit': 'spade',
+      'value': '11',
+      'description': 'Jack',
+      'short_description': 'J',
+      'points': 30,
+    },
+    {
+      'id': 21,
+      'suit': 'spade',
+      'value': '12',
+      'description': 'Queen',
+      'short_description': 'Q',
+      'points': 2,
+    },
+    {
+      'id': 22,
+      'suit': 'spade',
+      'value': '13',
+      'description': 'King',
+      'short_description': 'K',
+      'points': 3,
+    },
+    {
+      'id': 23,
+      'suit': 'spade',
+      'value': '1',
+      'description': 'Ace',
+      'short_description': 'A',
+      'points': 11,
+    },
+  ]
+
+2.  Create Teams Object
+  * let Teams =
+    {
+      'team_one':
+      {
+        'players': [],
+        'counting': false,
+        'points': 0
+      }
+    }
+
+3.  Create Player Object
+  * let players =
+    {
+      'player_one':
+      {
+        'name': 'steel',
+        'trumping': false
+      },
+      'player_two':
+      {
+        'name': 'shay',
+        'trumping': false
+      },
+      'player_three':
+      {
+        'name': 'madhir',
+        'trumping': false
+      },
+      'player_four':
+      {
+        'name': 'guzzee',
+        'trumping': false
+      }
+    }
