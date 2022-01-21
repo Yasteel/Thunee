@@ -13,11 +13,13 @@ $(document).ready(function()
   if(first_load == "false")
   {
     reload_lobby();
+    console.log(first_load);
   }
   else
   {
     join_lobby();
-    sessionStorage.setItem('first_load', true);
+    sessionStorage.setItem('first_load', false);
+    console.log(first_load);
   }
 });
 
@@ -386,5 +388,6 @@ socket.on('reset_teams', () =>
 socket.on('start_game', () =>
 {
   console.log('4');
+  sessionStorage.setItem('first_load', true);
   window.location.href = "thunee.html";
 });
