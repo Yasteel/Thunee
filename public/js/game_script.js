@@ -15,10 +15,19 @@ function join_lobby()
     if(response.status != 0)
     {
       showAlert(response.message, 2);
+      console.log(response.message);
     }
     else
     {
       socket.emit('join_lobby', user_data);
     }
+  });
+}
+
+function fetch_lobby()
+{
+  socket.emit('fetch_lobby', (response) =>
+  {
+    console.log(response);
   });
 }

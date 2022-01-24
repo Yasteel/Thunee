@@ -67,6 +67,7 @@ io.on('connection', (socket) =>
       obj.message = "Lobby is Full.";
       break;
     }
+    console.log(`=====================\n${lobby}\n=====================`);
     callback(obj);
   });
 
@@ -157,6 +158,11 @@ io.on('connection', (socket) =>
   {
     remove_user(socket);
   });
+
+  socket.on('fetch_lobby', (callback) =>
+  {
+    callback(lobby);
+  });
 });
 
 function check_lobby(username, lobby_name)
@@ -223,7 +229,6 @@ function remove_user(socket)
     }
   }
   console.log('user disconnected');
-  console.log(lobby);
 }
 
 

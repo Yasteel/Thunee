@@ -298,3 +298,42 @@ section.main > div
 
 
 i.fas.fa-square { transform: rotate(45deg); }
+
+
+/* --------Loading Screen-------- */
+
+.loading
+{
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: var(--l_black);
+  z-index: 99;
+  display: none;
+}
+
+.loading.show
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.loading img
+{
+  position: absolute;
+  top: 10%;
+  width: 500px;
+  /* border: 1px solid red; */
+}
+
+.loading .message
+{
+  position: absolute;
+  font-size: 2rem;
+  color: #e8e8e8;
+  text-transform: uppercase;
+}
