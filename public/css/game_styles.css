@@ -327,7 +327,6 @@ i.fas.fa-square { transform: rotate(45deg); }
   position: absolute;
   top: 10%;
   width: 500px;
-  /* border: 1px solid red; */
 }
 
 .loading .message

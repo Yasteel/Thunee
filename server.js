@@ -67,7 +67,6 @@ io.on('connection', (socket) =>
       obj.message = "Lobby is Full.";
       break;
     }
-    console.log(`=====================\n${lobby}\n=====================`);
     callback(obj);
   });
 
@@ -159,9 +158,26 @@ io.on('connection', (socket) =>
     remove_user(socket);
   });
 
+  // fetch_lobby just for testing//
   socket.on('fetch_lobby', (callback) =>
   {
     callback(lobby);
+  });
+
+  // events for actual game now//
+  socket.on('fetch_game', (lobby_name) =>
+  {
+    let lobby_idx = lobby.findIndex(index => index.lobby_name == lobby_name);
+
+    if(lobby_idx > -1)
+    {
+      io.to(lobby_name).emit('fetch_game', lobby[lobby_idx].teams);
+    }
+    else
+    {
+      io.to(lobby_name).emit('fetch_game', 0);
+    }
+
   });
 });
 
@@ -244,6 +260,20 @@ Lobby Array
     [
       'username': xxxxxxxxxx,
       'socket_id': xxxxxxxxxx
+    ],
+    'teams':
+    [
+      {
+        'ball_count': 0,
+        'counting': true/false,
+        'players':
+        [
+          'cards': [],
+          'hands': [],
+          'id': 1-4,
+          'score': 0
+        ]
+      }
     ]
   }
 ]
