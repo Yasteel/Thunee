@@ -32,8 +32,6 @@ server.listen(port, () =>
 
 io.on('connection', (socket) =>
 {
-  console.log(`New User has connected with ID: ${socket.id}`);
-
   socket.on('check_lobby', (data, callback) =>
   {
     let obj =
@@ -47,22 +45,56 @@ io.on('connection', (socket) =>
 
     switch (check_lobby(data.username, data.lobby))
     {
+      // Status 0 - if there are no lobbies, create one with user
+      // Status 0 - if there are lobbies but none with the specified lobby_name, create one with user
+      // Status 1 - if a lobby does not already has a user with the selected username
+      // Status 2 - if a lobby already has a user with the selected username
+      // Status 3 - if the lobby is full
+
       case '0':
-      lobby.push({'lobby_name': data.lobby, 'delete_lobby': true, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      lobby.push(
+        {
+          info:
+          {
+            lobby_name: data.lobby,
+            delete_lobby: true,
+            start_game: false,
+            no_users: 1,
+            round: 0
+          },
+          players:
+          [
+            {
+              id: 0,
+              socket_id: '',
+              username: data.username,
+              team: 0,
+              trumping: false,
+              score: 0,
+              calls: 0
+            }
+          ]
+        });
       break;
       case '1':
-      lobby.push({'lobby_name': data.lobby, 'delete_lobby': true, 'no_users': 1, 'players': [{'username': data.username, 'socket_id': ''}]});
+      let idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
+      lobby[idx].info.no_users++;
+      lobby[idx].players.push(
+        {
+          id: 0,
+          socket_id: '',
+          username: data.username,
+          team: 0,
+          trumping: false,
+          score: 0,
+          calls: 0
+        });
       break;
       case '2':
-      let idx = lobby.findIndex(index => index.lobby_name == data.lobby);
-      lobby[idx].no_users++;
-      lobby[idx].players.push({'username': data.username, 'socket_id': ''});
-      break;
-      case '3':
       obj.status = 1;
       obj.message = "Username is taken. Please choose another."
       break;
-      case '4':
+      case '3':
       obj.status = 2;
       obj.message = "Lobby is Full.";
       break;
@@ -72,14 +104,21 @@ io.on('connection', (socket) =>
 
   socket.on('join_lobby', (data) =>
   {
-    let lobby_idx = lobby.findIndex(index => index.lobby_name == data.lobby);
+    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
     socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
 
+    //
+    // console.log(
+    //   `
+    //   =====================\n
+    //   ${JSON.stringify(lobby)}\n
+    //   =====================
+    //   `);
     //inserts new socket id into player object
-    let player_idx = lobby[lobby_idx].players.findIndex(index => index.username == data.username);
-    lobby[lobby_idx].players[player_idx].socket_id = socket.id;
+    // let player_idx = lobby[lobby_idx].players.findIndex(index => index.username == data.username);
+    // lobby[lobby_idx].players[player_idx].socket_id = socket.id;
 
   });
 
@@ -100,52 +139,49 @@ io.on('connection', (socket) =>
 
   socket.on('start_game', (lobby_name, team_one, team_two) =>
   {
-    console.log('Starting game ...');
-    let lobby_idx = lobby.findIndex(index => index.lobby_name == lobby_name);
-    lobby[lobby_idx].delete_lobby = false;
+    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
 
-    lobby[lobby_idx].teams =
-    [
-      {
-        'players': [
-          {
-            'id': 1,
-            'name': team_one[0],
-            'cards': {},
-            'hands': {},
-            'score': 0
-          },
-          {
-            'id': 3,
-            'name': team_one[1],
-            'cards': {},
-            'hands': {},
-            'score': 0
-          }],
-        'ball_count': 0,
-        'counting': true
-      },
-      {
-        'players': [
-          {
-            'id': 2,
-            'name': team_two[0],
-            'cards': {},
-            'hands': {},
-            'score': 0
-          },
-          {
-            'id': 4,
-            'name': team_two[1],
-            'cards': {},
-            'hands': {},
-            'score': 0
-          }],
-        'ball_count': 0,
-        'counting': false
+    lobby[lobby_idx].info.delete_lobby = false;
+    lobby[lobby_idx].info.start_game = true;
+
+    // filling players info into object
+    lobby[lobby_idx].players.forEach((item, i) =>
+    {
+      item.score = 0;
+      item.call = 0;
+
+      switch (item.username) {
+        case team_one[0]:
+          item.id = 1;
+          item.team = 1;
+          item.trumping = true;
+          // item.socket_id = ;
+        break;
+        case team_one[1]:
+          item.id = 3;
+          item.team = 1;
+          item.trumping = false;
+          // item.socket_id = ;
+        break;
+        case team_two[0]:
+          item.id = 2;
+          item.team = 2;
+          item.trumping = false;
+          // item.socket_id = ;
+        break;
+        case team_two[1]:
+          item.id = 4;
+          item.team = 2;
+          item.trumping = false;
+          // item.socket_id = ;
+        break;
       }
-    ];
-    io.in(lobby_name).emit('start_game');
+    });
+
+    // creating teams object
+    lobby[lobby_idx].teams = [{ ball_count: 0, counting: false }, { ball_count: 0, counting: true }];
+
+    io.in(lobby_name).emit('start_game', lobby);
   });
 
   socket.on('leave_lobby', (room) =>
@@ -158,24 +194,19 @@ io.on('connection', (socket) =>
     remove_user(socket);
   });
 
-  // fetch_lobby just for testing//
-  socket.on('fetch_lobby', (callback) =>
-  {
-    callback(lobby);
-  });
-
   // events for actual game now//
-  socket.on('fetch_game', (lobby_name) =>
+  socket.on('fetch_lobby', (lobby_name, callback) =>
   {
-    let lobby_idx = lobby.findIndex(index => index.lobby_name == lobby_name);
-
+    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+    console.log(`Lobby idx: ${lobby_idx}`);
     if(lobby_idx > -1)
     {
-      io.to(lobby_name).emit('fetch_game', lobby[lobby_idx].teams);
+      //  ***** for now sending all lobby information ***** //
+      callback(lobby[lobby_idx]);
     }
     else
     {
-      io.to(lobby_name).emit('fetch_game', 0);
+      callback(0);
     }
 
   });
@@ -189,28 +220,28 @@ function check_lobby(username, lobby_name)
   }
   else
   {
-    var idx = lobby.findIndex(index => index.lobby_name == lobby_name);
+    var idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
     if(idx == -1)
     {
-      return '1';     // if there are lobbies but none with the specified lobby_name, create one with user
+      return '0';     // if there are lobbies but none with the specified lobby_name, create one with user
     }
     else
     {
-      if(lobby[idx].no_users < 4)
+      if(lobby[idx].info.no_users < 4)
       {
         // if a lobby was found and is available to join
         if(lobby[idx].players.findIndex(index => index.username == username) == -1)
         {
-          return '2'; // if a lobby does not already has a user with the selected username
+          return '1'; // if a lobby does not already has a user with the selected username
         }
         else
         {
-          return '3'; // if a lobby already has a user with the selected username
+          return '2'; // if a lobby already has a user with the selected username
         }
       }
       else
       {
-        return '4';   // if the lobby is full
+        return '3';   // if the lobby is full
       }
     }
   }
@@ -223,88 +254,28 @@ function remove_user(socket)
   {
     let player_idx = lobby[lobby_idx].players.findIndex(index => index.socket_id == socket.id);
 
-    socket.to(lobby[lobby_idx].lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
+    socket.to(lobby[lobby_idx].info.lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
 
     if(lobby[lobby_idx].players.length > 1)
     {
-      socket.leave(lobby[lobby_idx].lobby_name);
+      socket.leave(lobby[lobby_idx].info.lobby_name);
       lobby[lobby_idx].players.splice(player_idx, 1);
-      lobby[lobby_idx].no_users--;
+      lobby[lobby_idx].info.no_users--;
 
-      io.in(lobby[lobby_idx].lobby_name).emit('new_user', lobby[lobby_idx].players);
+      io.in(lobby[lobby_idx].info.lobby_name).emit('new_user', lobby[lobby_idx].players);
     }
     else if(lobby[lobby_idx].players.length == 1)
     {
-      socket.leave(lobby[lobby_idx].lobby_name);
+      socket.leave(lobby[lobby_idx].info.lobby_name);
       lobby[lobby_idx].players.splice(player_idx, 1);
-      lobby[lobby_idx].no_users--;
-      if(lobby[lobby_idx].delete_lobby)
+      lobby[lobby_idx].info.no_users--;
+      if(lobby[lobby_idx].info.delete_lobby && !lobby[lobby_idx].info.start_game)
       {
         lobby.splice(lobby_idx, 1);
+        console.log('Lobby Deleted');
       }
     }
   }
-  console.log('user disconnected');
+  console.log(`User Removed`);
+  console.log(JSON.stringify(lobby));
 }
-
-
-// Lobby Object
-/*
-Lobby Array
-[
-  {
-    'lobby_name': xxxxxxxxxx,
-    'delete_lobby': false,
-    'no_users': xxxxxxxxxx,
-    'players':
-    [
-      'username': xxxxxxxxxx,
-      'socket_id': xxxxxxxxxx
-    ],
-    'teams':
-    [
-      {
-        'ball_count': 0,
-        'counting': true/false,
-        'players':
-        [
-          'cards': [],
-          'hands': [],
-          'id': 1-4,
-          'score': 0
-        ]
-      }
-    ]
-  }
-]
-*/
-
-// Teams Object
-/*
-Teams Array
-[
-  {
-    'players':
-    [
-      {
-        'name': 'Yasteel',
-        'hands':
-        [
-          {}, {}, {}
-        ],
-        'cards':
-        [
-          {},{},{},{},{},{} // from card object
-        ],
-        'score': 0 //score determined by card value in 'hands' array
-      }
-    ],
-    'score': 0,
-    'counting': false
-  }
-]
-*/
-
-// array.splice(index, no_of_items);
-
-// TODO:

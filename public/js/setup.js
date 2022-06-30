@@ -139,8 +139,6 @@ function valid_teams(player_index, team)
     }
     break;
   }
-  console.log(`team 1: ${team_one}`);
-  console.log(`team 2: ${team_two}`);
 }
 
 function reset_teams()
@@ -354,10 +352,8 @@ function send_team_info(player_index, team, lobby)
 
 function start_game()
 {
-  console.log('2');
   if(team_one.length == 2 && team_two.length == 2)
   {
-    console.log('3');
     socket.emit('start_game', user_data.lobby, team_one, team_two);
   }
 }
@@ -365,7 +361,7 @@ function start_game()
 socket.on('new_user', (lobby_players) =>
 {
   players = object_cleanup(lobby_players);
-  console.log(players);
+  console.log(`%c${players}`, "color: lime");
   display_players();
   display_teams_view();
 });
@@ -385,9 +381,8 @@ socket.on('reset_teams', () =>
   reset_teams();
 });
 
-socket.on('start_game', () =>
+socket.on('start_game', (game_data) =>
 {
-  console.log('4');
   sessionStorage.setItem('first_load', true);
   window.location.href = "thunee.html";
 });
