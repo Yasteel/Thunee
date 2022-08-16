@@ -9,18 +9,7 @@ var messageContainer = document.getElementsByClassName('messages')[0];
 
 $(document).ready(function()
 {
-  let first_load = sessionStorage.getItem('first_load');
-  if(first_load == "false")
-  {
-    reload_lobby();
-    console.log(first_load);
-  }
-  else
-  {
-    join_lobby();
-    sessionStorage.setItem('first_load', false);
-    console.log(first_load);
-  }
+
 });
 
 $(document).on('click', '.checkbox_icon', function()
@@ -264,28 +253,6 @@ function display_players()
 
 //Communicate with Server
 
-function join_lobby()
-{
-  user_data = JSON.parse(sessionStorage.getItem('user_data'));
-  socket.emit('join_lobby', user_data);
-}
-
-function reload_lobby()
-{
-  user_data = JSON.parse(sessionStorage.getItem('user_data'));
-  socket.emit('check_lobby', user_data, (response) =>
-  {
-    if(response.status != 0)
-    {
-      showAlert(response.message, 2);
-    }
-    else
-    {
-      socket.emit('join_lobby', user_data);
-    }
-  });
-}
-
 function send_message()
 {
   var message = $('.msg_text').val();
@@ -306,15 +273,6 @@ function send_message()
   }
 }
 
-function object_cleanup(lobby_players)
-{
-  let clean_arr = [];
-  lobby_players.forEach((item, i) => {
-    clean_arr.push(item.username);
-  });
-  return clean_arr;
-}
-
 function display_message(username, text)
 {
   let message = '';
@@ -328,61 +286,12 @@ function display_message(username, text)
     message =
     `
     <div class="message ${username == user_data.username ? " to" : " from"}">
-      <div class="m_header"><p>${username}</p></div>
-      <div class="m_body"><p>${text}</p></div>
+    <div class="m_header"><p>${username}</p></div>
+    <div class="m_body"><p>${text}</p></div>
     </div>
     `;
   }
 
   $('.message_wrapper .messages').append(message);
-    messageContainer.scrollTop = messageContainer.scrollHeight
+  messageContainer.scrollTop = messageContainer.scrollHeight
 }
-
-function send_team_info(player_index, team, lobby)
-{
-  let obj =
-  {
-    "player_index": player_index,
-    "team": team,
-    "lobby": lobby
-  };
-
-  socket.emit('team_info', obj);
-}
-
-function start_game()
-{
-  if(team_one.length == 2 && team_two.length == 2)
-  {
-    socket.emit('start_game', user_data.lobby, team_one, team_two);
-  }
-}
-
-socket.on('new_user', (lobby_players) =>
-{
-  players = object_cleanup(lobby_players);
-  console.log(`%c${players}`, "color: lime");
-  display_players();
-  display_teams_view();
-});
-
-socket.on('new_message', (message) =>
-{
-  display_message(message.username, message.text);
-});
-
-socket.on('new_teams', ({player_index, team}) =>
-{
-  valid_teams(player_index, team);
-});
-
-socket.on('reset_teams', () =>
-{
-  reset_teams();
-});
-
-socket.on('start_game', (game_data) =>
-{
-  sessionStorage.setItem('first_load', true);
-  window.location.href = "thunee.html";
-});

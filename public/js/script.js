@@ -13,16 +13,27 @@ $(document).on('click', '#btn_join_game', function()
   {
     socket.emit('check_lobby', {username, lobby}, (response) =>
     {
-      if(response.status != 0)
+      switch(response)
       {
-        console.log(response.status);
-        showAlert(response.message, 2);
-      }
-      else
-      {
-        sessionStorage.setItem('first_load', true);
-        sessionStorage.setItem('user_data', JSON.stringify({"username": username, "lobby": lobby}));
-        window.location.href = "lobby.html";
+        case '0':
+          socket.emit('create_lobby', {username, lobby});
+          sessionStorage.setItem({"username": username, "lobby": lobby});
+          window.location.href = "lobby.html";
+          break;
+        case '1':
+          let new_user = true;
+          socket.emit('join_lobby', {username, lobby}, new_user);
+          sessionStorage.setItem({"username": username, "lobby": lobby});
+          window.location.href = "lobby.html";
+          break;
+        case '2': showAlert("Username is taken. Please choose another.", 2); break;
+        case '3': showAlert("Lobby is Full.", 2); break;
+
+        // Status 0 - if there are no lobbies, create one with user
+        // Status 0 - if there are lobbies but none with the specified lobby_name, create one with user
+        // Status 1 - if a lobby does not already has a user with the selected username
+        // Status 2 - if a lobby already has a user with the selected username
+        // Status 3 - if the lobby is full
       }
     });
   }

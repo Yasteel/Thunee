@@ -32,6 +32,8 @@ server.listen(port, () =>
 
 io.on('connection', (socket) =>
 {
+  console.log("awe");
+  console.log(socket.rooms);
   socket.on('check_lobby', (data, callback) =>
   {
     let obj =
@@ -39,45 +41,44 @@ io.on('connection', (socket) =>
       status: 0,
       message: `${data.username} Joined Lobby: ${data.lobby}`
     };
-    // Status 0 - Joined Lobby
-    // Status 1 - Username Taken
-    // Status 2 - Lobby Full
 
-    switch (check_lobby(data.username, data.lobby))
-    {
-      // Status 0 - if there are no lobbies, create one with user
-      // Status 0 - if there are lobbies but none with the specified lobby_name, create one with user
-      // Status 1 - if a lobby does not already has a user with the selected username
-      // Status 2 - if a lobby already has a user with the selected username
-      // Status 3 - if the lobby is full
+    let lobby_status = check_lobby(data.username, data.lobby);
+    callback(lobby_status);
+  });
 
-      case '0':
-      lobby.push(
+  socket.on('create_lobby', (data) =>
+  {
+    lobby.push(
+      {
+        info:
         {
-          info:
+          lobby_name: data.lobby,
+          delete_lobby: true,
+          start_game: false,
+          no_users: 1,
+          round: 0
+        },
+        players:
+        [
           {
-            lobby_name: data.lobby,
-            delete_lobby: true,
-            start_game: false,
-            no_users: 1,
-            round: 0
-          },
-          players:
-          [
-            {
-              id: 0,
-              socket_id: '',
-              username: data.username,
-              team: 0,
-              trumping: false,
-              score: 0,
-              calls: 0
-            }
-          ]
-        });
-      break;
-      case '1':
-      let idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
+            id: 0,
+            socket_id: '',
+            username: data.username,
+            team: 0,
+            trumping: false,
+            score: 0,
+            calls: 0
+          }
+        ]
+      });
+  });
+
+  socket.on('join_lobby', (data, new_user) =>
+  {
+    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
+
+    if(new_user)
+    {
       lobby[idx].info.no_users++;
       lobby[idx].players.push(
         {
@@ -89,22 +90,8 @@ io.on('connection', (socket) =>
           score: 0,
           calls: 0
         });
-      break;
-      case '2':
-      obj.status = 1;
-      obj.message = "Username is taken. Please choose another."
-      break;
-      case '3':
-      obj.status = 2;
-      obj.message = "Lobby is Full.";
-      break;
     }
-    callback(obj);
-  });
 
-  socket.on('join_lobby', (data) =>
-  {
-    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
     socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
