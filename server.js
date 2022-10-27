@@ -103,18 +103,6 @@ io.on('connection', (socket) =>
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
     // socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
-
-    //
-    // console.log(
-    //   `
-    //   =====================\n
-    //   ${JSON.stringify(lobby)}\n
-    //   =====================
-    //   `);
-    //inserts new socket id into player object
-    // let player_idx = lobby[lobby_idx].players.findIndex(index => index.username == data.username);
-    // lobby[lobby_idx].players[player_idx].socket_id = socket.id;
-
   });
 
   socket.on('send_message', (message) =>
