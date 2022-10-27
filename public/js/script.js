@@ -4,6 +4,12 @@ $(document).on('click', '#btn_join_game', function()
 {
   let username = $('#username').val();
   let lobby = $('#lobby').val();
+  let user_data = 
+  {
+    'username': username,
+    'lobby': lobby,
+    'socket_id': socket.id
+  };
 
   if(username.trim() == '' || lobby.trim() == '')
   {
@@ -11,19 +17,19 @@ $(document).on('click', '#btn_join_game', function()
   }
   else
   {
-    socket.emit('check_lobby', {username, lobby}, (response) =>
+    socket.emit('check_lobby', user_data, (response) =>
     {
       switch(response)
       {
         case '0':
-          socket.emit('create_lobby', {username, lobby});
-          sessionStorage.setItem({"username": username, "lobby": lobby});
+          socket.emit('create_lobby', user_data);
+          sessionStorage.setItem("user_data", JSON.stringify(user_data));
           window.location.href = "lobby.html";
           break;
-        case '1':
-          let new_user = true;
-          socket.emit('join_lobby', {username, lobby}, new_user);
-          sessionStorage.setItem({"username": username, "lobby": lobby});
+          case '1':
+            let new_user = true;
+            socket.emit('join_lobby', user_data, new_user);
+            sessionStorage.setItem("user_data", JSON.stringify(user_data));
           window.location.href = "lobby.html";
           break;
         case '2': showAlert("Username is taken. Please choose another.", 2); break;

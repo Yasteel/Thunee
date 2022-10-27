@@ -9,7 +9,22 @@ var messageContainer = document.getElementsByClassName('messages')[0];
 
 $(document).ready(function()
 {
-
+  console.log(socket.id);
+  if(JSON.parse(sessionStorage.getItem("user_data")))
+  {
+    socket.on("connect", () => {
+      console.log(socket.id);
+      user_data = JSON.parse(sessionStorage.getItem("user_data"));
+      user_data.socket_id = socket.id;
+      sessionStorage.setItem('user_data', JSON.stringify(user_data));
+      socket.emit('join_lobby', user_data, true);
+      socket.emit('fetch_lobby', user_data.lobby);   
+    });
+  }
+  else
+  {
+    window.location.href = "index.html";
+  }
 });
 
 $(document).on('click', '.checkbox_icon', function()
@@ -143,7 +158,7 @@ function display_teams_view()
 {
   let teams =
   `
-  <div class="card teams ${user_data.username != players[0] ? "non_admin": "admin"}">
+  <div class="card teams ${user_data.username != players[0].username ? "non_admin": "admin"}">
   <div class="card_header">
     <h2>Teams</h2>
     <a class="btn_reset_teams">Reset Teams</a>
@@ -157,7 +172,7 @@ function display_teams_view()
 
   for(let i=0; i<4; i++)
   {
-    teams += players[i] ? `<td>${players[i]}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
+    teams += players[i] ? `<td>${players[i].username}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
   }
   teams +=
   `
@@ -190,11 +205,11 @@ function display_teams_view()
   </div>
   `;
 
-  if(players.length < 4 && user_data.username == players[0])
+  if(players.length < 4 && user_data.username == players[0].username)
   {
     teams += `<div class="overlay" data-reason="0"></div>`;
   }
-  else if(user_data.username != players[0])
+  else if(user_data.username != players[0].username)
   {
     teams += `<div class="overlay" data-reason="1"></div></div>`;
   }
@@ -222,7 +237,7 @@ function display_players()
       players_table +=
       `
       <tr class="ready">
-        <td>${players[i]}</td>
+        <td>${players[i].username}</td>
         <td>
           <i class="fas fa-check"></i>
           <i class="fas fa-spinner"></i>
@@ -251,6 +266,16 @@ function display_players()
   display_teams_view();
 }
 
+// async function update_socket_id()
+// {
+//   console.log('update opened');
+//   let myPromise = new Promise((resolve, reject)=> 
+//   {
+//     resolve(socket.id).then((value) => {console.log('awe')});
+//   });
+//   // return await myPromise;
+
+// } 
 //Communicate with Server
 
 function send_message()
@@ -295,3 +320,23 @@ function display_message(username, text)
   $('.message_wrapper .messages').append(message);
   messageContainer.scrollTop = messageContainer.scrollHeight
 }
+
+function getLobby()
+{
+  socket.emit('getLobby');
+}
+
+
+socket.on('receiveLobby', data =>
+{
+  console.log(data);
+  console.log(JSON.parse(data));
+});
+
+socket.on('lobby_changes', new_players => 
+{
+  players = new_players;
+  display_players();
+})
+
+

@@ -6,6 +6,8 @@ const socketio = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const { instrument } = require('@socket.io/admin-ui');
+const { json } = require('express');
+const { log } = require('console');
 const io = socketio(server,
   {
     cors:
@@ -32,8 +34,13 @@ server.listen(port, () =>
 
 io.on('connection', (socket) =>
 {
-  console.log("awe");
-  console.log(socket.rooms);
+  ////////////////////////////////////////////////////////////
+  socket.on('getLobby', () =>
+  {
+    socket.emit('receiveLobby', JSON.stringify(lobby));
+  });
+  ////////////////////////////////////////////////////////////
+
   socket.on('check_lobby', (data, callback) =>
   {
     let obj =
@@ -53,6 +60,7 @@ io.on('connection', (socket) =>
         info:
         {
           lobby_name: data.lobby,
+          login: true,
           delete_lobby: true,
           start_game: false,
           no_users: 1,
@@ -62,7 +70,7 @@ io.on('connection', (socket) =>
         [
           {
             id: 0,
-            socket_id: '',
+            socket_id: data.socket_id,
             username: data.username,
             team: 0,
             trumping: false,
@@ -79,11 +87,11 @@ io.on('connection', (socket) =>
 
     if(new_user)
     {
-      lobby[idx].info.no_users++;
-      lobby[idx].players.push(
+      lobby[lobby_idx].info.no_users++;
+      lobby[lobby_idx].players.push(
         {
           id: 0,
-          socket_id: '',
+          socket_id: data.socket_id,
           username: data.username,
           team: 0,
           trumping: false,
@@ -94,7 +102,7 @@ io.on('connection', (socket) =>
 
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
-    socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
+    // socket.to(data.lobby).emit('new_message', {"username": "admin", "text": `${data.username} Joined`});
 
     //
     // console.log(
@@ -175,27 +183,25 @@ io.on('connection', (socket) =>
   {
     socket.leave(room);
   });
-
+  
   socket.on('disconnect', () =>
   {
+    console.log(`====\nsocket id: ${socket.id} disconnected\n====`);
     remove_user(socket);
   });
 
+
   // events for actual game now//
-  socket.on('fetch_lobby', (lobby_name, callback) =>
+
+  // event to send player info to each lobby //
+  socket.on('fetch_lobby', (lobby_name) =>
   {
     let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
     console.log(`Lobby idx: ${lobby_idx}`);
     if(lobby_idx > -1)
     {
-      //  ***** for now sending all lobby information ***** //
-      callback(lobby[lobby_idx]);
+      io.in(lobby[lobby_idx].info.lobby_name).emit("lobby_changes", lobby[lobby_idx].players);
     }
-    else
-    {
-      callback(0);
-    }
-
   });
 });
 
@@ -234,35 +240,47 @@ function check_lobby(username, lobby_name)
   }
 }
 
-function remove_user(socket)
-{
+function remove_user(socket){
   let lobby_idx = lobby.findIndex(idx => idx.players.findIndex(p_idx => p_idx.socket_id == socket.id) > -1);
   if(lobby_idx > -1)
   {
     let player_idx = lobby[lobby_idx].players.findIndex(index => index.socket_id == socket.id);
 
-    socket.to(lobby[lobby_idx].info.lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
+    // socket.to(lobby[lobby_idx].info.lobby_name).emit('new_message', {"username": "admin", "text": `${lobby[lobby_idx].players[player_idx].username} Left`});
 
+    
     if(lobby[lobby_idx].players.length > 1)
     {
       socket.leave(lobby[lobby_idx].info.lobby_name);
       lobby[lobby_idx].players.splice(player_idx, 1);
       lobby[lobby_idx].info.no_users--;
 
-      io.in(lobby[lobby_idx].info.lobby_name).emit('new_user', lobby[lobby_idx].players);
+      io.in(lobby[lobby_idx].info.lobby_name).emit('lobby_changes', lobby[lobby_idx].players);
     }
     else if(lobby[lobby_idx].players.length == 1)
     {
       socket.leave(lobby[lobby_idx].info.lobby_name);
       lobby[lobby_idx].players.splice(player_idx, 1);
       lobby[lobby_idx].info.no_users--;
-      if(lobby[lobby_idx].info.delete_lobby && !lobby[lobby_idx].info.start_game)
+      if(lobby[lobby_idx].info.delete_lobby && !lobby[lobby_idx].info.start_game && !lobby[lobby_idx].info.login)
       {
         lobby.splice(lobby_idx, 1);
         console.log('Lobby Deleted');
       }
     }
+
+
   }
   console.log(`User Removed`);
   console.log(JSON.stringify(lobby));
 }
+
+// function in_lobby(socketID)
+// {
+//   let lobby_idx = lobby.findIndex(l_idx => l_idx.players.findIndex(p_idx => p_idx.socket_id == socketID) > -1);
+
+//   if(lobby_idx > -1)
+//   {
+//     io.in(lobby[lobby_idx].lobby_name).emit('lobby_changes', lobby[lobby_idx].players);
+//   }
+// }
