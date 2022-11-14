@@ -232,3 +232,19 @@
         'trumping': false
       }
     }
+
+
+players:
+        [
+          {
+            id: 0,
+            socket_id: data.socket_id,
+            username: data.username,
+            team: 0,
+            trumping: false,
+            score: 0,
+            calls: 0
+          }
+        ]
+
+browser-sync start --server --files ".html, *.css, css/*.css"

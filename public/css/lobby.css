@@ -79,41 +79,35 @@ section.main .card
   width: 100%;
   border-collapse: collapse;
 }
-
 .card.players table tr
 {
   height: 75px;
   width: 100%;
 }
-
 .card.players table tr.ready
 {
   color: var(--purple);
   border-bottom: 2px solid var(--purple);
 }
-
 .card.players table tr.ready .fa-spinner
 {
   display: none;
 }
-
 .card.players table tr.waiting
 {
   color: var(--l_white);
   border-bottom: 2px solid var(--l_white);
 }
-
 .card.players table tr.waiting .fa-check
 {
   display: none;
+  color: var(--l_purple);
 }
-
 .card.players table tr td
 {
   padding: 0 30px;
   font-size: 1.1rem;
 }
-
 .card.players table tr td:first-child
 {
   width: 75%;
@@ -129,44 +123,30 @@ section.main .card
   table-layout: fixed;
   width: 100%;
 }
-
 .card.teams table tr
 {
   height: 75px;
 }
-
 .card.teams table td
 {
   text-align: center;
   color: var(--l_white);
 }
-
 .card.teams table th
 {
   text-align: center;
   color: var(--purple);
 }
-
-.card.teams input[type=checkbox]
-{
-  display: none;
-}
-
+.card.teams input[type=checkbox] { display: none; }
 .card.teams i
 {
   font-size: 1.5rem;
   cursor: pointer;
   color: var(--l_white);
 }
-.card.teams table tr td i:hover
-{
-  color: var(--d_white);
-}
-
-.card.teams input[type=checkbox]:checked ~ i
-{
-  color: var(--purple);
-}
+.card.teams table tr td i:hover { color: var(--d_white); }
+.card.teams input[type=checkbox]:checked ~ i { color: var(--purple); }
+.card.teams td.player_name { text-transform: capitalize; }
 
 @keyframes rotate
 {
@@ -310,3 +290,13 @@ section.main .card
   color: black;
   /* background: var(--l_purple); */
 }
+
+/* @media only screen and (min-device-width: 320px) and (max-device-width: 480px){
+
+} 
+
+    320px — 480px: Mobile devices
+    481px — 768px: iPads, Tablets
+    769px — 1024px: Small screens, laptops
+    1025px — 1200px: Desktops, large screens
+    1201px and more —  Extra large screens, TV */

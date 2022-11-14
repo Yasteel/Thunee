@@ -1,6 +1,4 @@
 var socket = io();
-var team_one = [];
-var team_two = [];
 var players = [];
 var view = 0;
 var user_data;
@@ -9,16 +7,16 @@ var messageContainer = document.getElementsByClassName('messages')[0];
 
 $(document).ready(function()
 {
-  console.log(socket.id);
   if(JSON.parse(sessionStorage.getItem("user_data")))
   {
     socket.on("connect", () => {
-      console.log(socket.id);
       user_data = JSON.parse(sessionStorage.getItem("user_data"));
       user_data.socket_id = socket.id;
       sessionStorage.setItem('user_data', JSON.stringify(user_data));
       socket.emit('join_lobby', user_data, true);
-      socket.emit('fetch_lobby', user_data.lobby);   
+      socket.emit('fetch_lobby', user_data.lobby);
+
+      $('span.lobby_name').text(user_data.lobby);
     });
   }
   else
@@ -29,11 +27,16 @@ $(document).ready(function()
 
 $(document).on('click', '.checkbox_icon', function()
 {
-  let player_index = $(this).data('player-index');
-  let team = $(this).closest('tr').attr('id');
-
-  valid_teams(player_index, team);
-  send_team_info(player_index, team, user_data.lobby);
+  let player_socket_id = $(this).data('socket-id');
+  let team = $(this).closest('tr').attr('id') == 'team_one' ? 1 : 2;
+  
+  let old_players = JSON.stringify(players);
+  valid_teams(player_socket_id, team);
+  
+  if(JSON.stringify(players) != old_players)
+  {
+    send_team_info();
+  }
 });
 
 $(document).on('click', '.btn_reset_teams', function()
@@ -68,93 +71,93 @@ $(document).on('keypress', '.msg_text', function(e)
   }
 });
 
-function valid_teams(player_index, team)
+function valid_teams(p_sid, team)
 {
-  let player = players[parseInt(player_index)];
-  switch(team)
+  let other_team = team == 1 ? 2 : 1;
+  let team_count = 0;
+  let player_idx = players.findIndex(index => index.socket_id == p_sid );
+
+  $.each(players, (i, player) => 
   {
-    case 'team_one':
-    if(team_one.length < 2)
+    if(player.team == team)
     {
-      if(team_two.findIndex(index => index == player) >= 0)
-      {
-        let player_idx = team_two.findIndex(index => index == player);
-        team_two.splice(player_idx, 1);
-        $(`#team_two i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
-        $(`#team_two i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
-        $(`#team_two i[data-player-index="${player_index}"]`).addClass('fa-square');
-      }
-
-      if(team_one.findIndex(index => index == player) >= 0)
-      {
-        let player_idx = team_one.findIndex(index => index == player);
-        team_one.splice(player_idx, 1);
-        $(`#team_one i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
-        $(`#team_one i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
-        $(`#team_one i[data-player-index="${player_index}"]`).addClass('fa-square');
-      }
-      else
-      {
-        team_one.push(player);
-        $(`#team_one i[data-player-index="${player_index}"]`).siblings('input').attr('checked', true);
-        $(`#team_one i[data-player-index="${player_index}"]`).removeClass('fa-square');
-        $(`#team_one i[data-player-index="${player_index}"]`).addClass('fa-check-square');
-      }
+      team_count++;
+    }
+  });
+    
+  // if team has space
+  if(team_count < 2)
+  {
+    //if Player is Not Part of a Team Yet
+    if(players[player_idx].team == 'null')
+    {
+      players[player_idx].team = team;
+      change_icon(p_sid, team, 'fa-square', 'fa-check-square', true);
     }
     else
     {
-      showAlert('Only 2 Players Per Team', 2);
-    }
-    break;
-
-    case 'team_two':
-    if(team_two.length < 2)
-    {
-      if(team_one.findIndex(index => index == player) >= 0)
+      //To Switch Teams
+      if(players[player_idx].team == other_team)
       {
-        let player_idx = team_one.findIndex(index => index == player);
-        team_one.splice(player_idx, 1);
-        $(`#team_one i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
-        $(`#team_one i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
-        $(`#team_one i[data-player-index="${player_index}"]`).addClass('fa-square');
-
-        console.log(player_index);
+        players[player_idx].team = team;
+        change_icon(p_sid, other_team, 'fa-check-square', 'fa-square', false);
+        change_icon(p_sid, team, 'fa-square', 'fa-check-square', true);
       }
-
-      if(team_two.findIndex(index => index == player) >= 0)
-      {
-        let player_idx = team_two.findIndex(index => index == player);
-        team_two.splice(player_idx, 1);
-        $(`#team_two i[data-player-index="${player_index}"]`).siblings('input').attr('checked', false);
-        $(`#team_two i[data-player-index="${player_index}"]`).removeClass('fa-check-square');
-        $(`#team_two i[data-player-index="${player_index}"]`).addClass('fa-square');
-      }
+      //To Deselect Player From Team
       else
       {
-        team_two.push(player);
-        $(`#team_two i[data-player-index="${player_index}"]`).siblings('input').attr('checked', true);
-        $(`#team_two i[data-player-index="${player_index}"]`).removeClass('fa-square');
-        $(`#team_two i[data-player-index="${player_index}"]`).addClass('fa-check-square');
+        players[player_idx].team = 'null';
+        change_icon(p_sid, team, 'fa-check-square', 'fa-square', false);
       }
     }
-    else
-    {
-      showAlert('Only 2 Players Per Team', 2);
-    }
-    break;
   }
+  //If Team is Full
+  else
+  {
+    //Try to Add More Than 2 Players 
+    if(players[player_idx].team == 'null')
+    {
+      showAlert('Team is Full', 2);
+    }
+    //To Deselect Player from Full Team
+    else if(players[player_idx].team == team)
+    {
+      players[player_idx].team = 'null';
+      change_icon(p_sid, team, 'fa-check-square', 'fa-square', false);
+    }
+    else if(players[player_idx].team == other_team)
+    {
+      showAlert('Team is Full', 2);
+    }
+  }
+}
+
+function change_icon(p_sid, team, removeIcon, addIcon, check)
+{
+  $(`#team_${team == 1 ? 'one' : 'two'} i[data-socket-id="${p_sid}"]`).removeClass(removeIcon);
+  $(`#team_${team == 1 ? 'one' : 'two'} i[data-socket-id="${p_sid}"]`).addClass(addIcon);  
+  $(`#team_${team == 1 ? 'one' : 'two'} i[data-socket-id="${p_sid}"]`).siblings('input').attr('checked', check);
 }
 
 function reset_teams()
 {
-  team_one = [];
-  team_two = [];
-  $('.teams .card_body table tr td i:not(.fa-spinner)').removeClass('fa-check-square');
-  $('.teams .card_body table tr td i:not(.fa-spinner)').addClass('fa-square');
-  $('.teams .card_body table tr td input').attr('checked', false);
+  let old_players = JSON.stringify(players);
+  $.each(players, (i,v) => 
+  {
+    if(v.team != 'null')
+    {
+      change_icon(v.socket_id, v.team, 'fa-check-square', 'fa-square', false);
+      v.team = 'null';
+    }
+  });
+
+  if(JSON.stringify(players) != old_players)
+  {
+    socket.emit('team_changes', {lobby: user_data.lobby, players: players});
+  }
 }
 
-function display_teams_view()
+function display_teams_table()
 {
   let teams =
   `
@@ -172,30 +175,22 @@ function display_teams_view()
 
   for(let i=0; i<4; i++)
   {
-    teams += players[i] ? `<td>${players[i].username}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
-  }
-  teams +=
-  `
-  </tr>
-  <tr id="team_one">
-    <td>Team 1</td>
-  `;
-
-  for(let i=0; i<4; i++)
-  {
-    teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
+    teams += players[i] ? `<td class="player_name">${players[i].username}</td>` : `<td><i class="fas fa-spinner"></i></td>`;
   }
 
-  teams +=
-  `
-  </tr>
-  <tr id="team_two">
-    <td>Team 2</td>
-  `;
-
-  for(let i=0; i<4; i++)
+  for(let i=1; i<=2; i++)
   {
-    teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-player-index="${i}"></i></td>`;
+    teams +=
+    `
+      </tr>
+      <tr id="${i==1 ? "team_one":"team_two"}">
+        <td>Team ${i}</td>
+    `;
+
+    for(let j=0; j<4; j++)
+    {
+      teams += `<td><input type="checkbox"><i class="fas fa-square checkbox_icon" data-socket-id="${players[j]? players[j].socket_id : null}"></i></td>`;
+    }
   }
 
   teams +=
@@ -263,7 +258,25 @@ function display_players()
   $('.card.players').html('');
   $('.card.players').append(players_table);
 
-  display_teams_view();
+  display_teams_table();
+}
+
+// function display_teams(team_one, team_two)
+// {
+//   for(let i=0; i<team_one.length; i++)
+//   {
+
+//   }
+// }
+
+function send_team_info()
+{
+  socket.emit('team_changes', {lobby: user_data.lobby, players: players});
+}
+
+function start_game()
+{
+  socket.emit('start_game', user_data.lobby);
 }
 
 // async function update_socket_id()
@@ -321,14 +334,14 @@ function display_message(username, text)
   messageContainer.scrollTop = messageContainer.scrollHeight
 }
 
-function getLobby()
+function personal_message(message, ou)
 {
-  socket.emit('getLobby');
+  socket.emit('personal_message', message, ou);
 }
-
 
 socket.on('receiveLobby', data =>
 {
+  console.log('received lobby');
   console.log(data);
   console.log(JSON.parse(data));
 });
@@ -337,6 +350,40 @@ socket.on('lobby_changes', new_players =>
 {
   players = new_players;
   display_players();
-})
+});
 
+socket.on('personal_message', (message) => 
+{
+  console.log(message);
+});
 
+socket.on('team_changes', (new_players) => 
+{
+  console.log('team changes');
+  players = new_players;
+
+  $.each(players, (i,v) => 
+  {
+    if(v.team == 'null')
+    {
+      change_icon(v.socket_id, 1, 'fa-check-square', 'fa-square', false);
+      change_icon(v.socket_id, 2, 'fa-check-square', 'fa-square', false);
+    }
+    else if(v.team == 1)
+    {
+      change_icon(v.socket_id, 1, 'fa-square', 'fa-check-square',  true);
+      change_icon(v.socket_id, 2, 'fa-check-square', 'fa-square', false);
+    }
+    else if(v.team == 2)
+    {
+      change_icon(v.socket_id, 2, 'fa-square', 'fa-check-square',  true);
+      change_icon(v.socket_id, 1, 'fa-check-square', 'fa-square', false);
+    }
+  });
+
+});
+
+socket.on('start_game', () => 
+{
+  window.location.href = "game.html";
+});

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <!-- <link rel="shortcut icon" type="image/png" href="assets/icon/favicon.png"> -->
+    <title>Thunee</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/presets.css">
+    <link rel="stylesheet" type="text/css" href="css/game_styles.css">
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <h2>Thunee <span>by Yasteel</span></h2>
+        <p>Lobby: <span class="lobby_name">lobs</span></p>
+      </div>
+      <div class="body">
+        <section class="main">
+          <div class="row_1">
+              <div class="sack">
+                <div class="ball_cards primary" data-score="0">
+                  <div class="card back black">
+                    <p>♠</p><p>♠</p><p>♠</p><p>♠</p><p>♠</p><p>♠</p>
+                  </div>
+                  <div class="card front red">
+                    <p>♦</p><p>♦</p><p>♦</p><p>♦</p><p>♦</p><p>♦</p>
+                  </div>
+                </div>
+              </div>
+              <div class="play_area">
+                <div class="card red">
+                  <div class="desc"><p>9</p></div>
+                  <div class="suit"><img src="icon/heart.png" alt="spades"></div>
+                </div>
+                <div class="card empty"></div>
+                <div class="card empty"></div>
+                <div class="card empty"></div>
+              </div>
+              <div class="sack">
+                <div class="ball_cards secondary" data-score="0">
+                  <div class="card back red">
+                    <p>♥</p><p>♥</p><p>♥</p><p>♥</p><p>♥</p><p>♥</p>
+                  </div>
+                  <div class="card front black">
+                    <p>♣</p><p>♣</p><p>♣</p><p>♣</p><p>♣</p><p>♣</p>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="row_2">
+            <div class="card red">
+              <div class="desc"><p>9</p></div>
+              <div class="suit"><img src="icon/heart.png" alt="spades"></div>
+            </div>
+            <div class="card red">
+              <div class="desc"><p>9</p></div>
+              <div class="suit"><img src="icon/heart.png" alt="spades"></div>
+            </div>
+            <div class="card red">
+              <div class="desc"><p>9</p></div>
+              <div class="suit"><img src="icon/diamond.png" alt="spades"></div>
+            </div>
+            <div class="card red">
+              <div class="desc"><p>9</p></div>
+              <div class="suit"><img src="icon/heart.png" alt="spades"></div>
+            </div>
+            <div class="card black">
+              <div class="desc"><p>K</p></div>
+              <div class="suit"><img src="icon/club.png" alt="spades"></div>
+            </div>
+            <div class="card black">
+              <div class="desc"><p>J</p></div>
+              <div class="suit"><img src="icon/spade.png" alt="spades"></div>
+            </div>
+          </div>
+          <div class="row_3">
+            <a class="call_to_trump">Call To Trump</a>
+            <a class="call_to_keep">Keep</a>
+            <a class="call_last_card">Last Card Trump</a>
+            <a class="call_20">20</a>
+            <a class="call_30">30</a>
+            <a class="call_40">40</a>
+            <a class="call_50">50</a>
+            <a class="call_thunee">THUNEE</a>
+            <a class="call_double">Double</a>
+            <a class="call_khanuck">Khanuck</a>
+            <a class="shuffle">Shuffle</a>
+            <a class="cut">Cut</a>
+            <a class="deal">Deal</a>
+          </div>
+        </section>
+      </div>
+      <div class="alert_message">
+        <p class="message"></p>
+        <span><i class="message_type_icon fas"></i></span>
+      </div>
+      <div class="loading">
+        <img src="images/shuffling-t.gif" alt="">
+        <p class="message">Game is Loading</p>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/presets.js"></script>
+    <script type="text/javascript" src="js/game_script.js"></script>
+  </body>
+</html>

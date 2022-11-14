@@ -25,3 +25,8 @@ function showAlert(text, type, stay)
     }, 3200);
   }
 }
+
+function getLobby()
+{
+  socket.emit('getLobby');
+}

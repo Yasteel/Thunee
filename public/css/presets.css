@@ -44,10 +44,23 @@
 	height: 4rem;
 	padding: 0 2rem;
 	display: flex;
-	flex-direction: column;
-	justify-content: center;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 	background: var(--d_black);
 	border-bottom: 2px solid var(--purple);
+}
+
+.wrapper .header p
+{
+	color: var(--l_white);
+	font-size: 1.2rem;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+.wrapper .header p span.lobby_name
+{
+	text-transform: none;
 }
 
 .wrapper .body
