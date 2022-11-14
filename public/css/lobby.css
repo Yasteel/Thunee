@@ -291,12 +291,24 @@ section.main .card
   /* background: var(--l_purple); */
 }
 
-/* @media only screen and (min-device-width: 320px) and (max-device-width: 480px){
+@media screen and (max-width: 1080px){
+  .wrapper { background: rgb(45, 100, 107)}
+  
+  section.main { 
+    flex-direction: column; 
+  }
+  section.main .card{
+    width: 100%;
+    height: unset;
+    min-height: 20%;
+  }
 
 } 
 
-    320px — 480px: Mobile devices
-    481px — 768px: iPads, Tablets
-    769px — 1024px: Small screens, laptops
-    1025px — 1200px: Desktops, large screens
-    1201px and more —  Extra large screens, TV */
+/* 
+320px — 480px: Mobile devices
+481px — 768px: iPads, Tablets
+769px — 1024px: Small screens, laptops
+1025px — 1200px: Desktops, large screens
+1201px and more —  Extra large screens, TV 
+*/
