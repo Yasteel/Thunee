@@ -8,6 +8,7 @@ const server = http.createServer(app);
 const { instrument } = require('@socket.io/admin-ui');
 const { json } = require('express');
 const { log } = require('console');
+const { userInfo } = require('os');
 const io = socketio(server,
   {
     cors:
@@ -82,21 +83,27 @@ io.on('connection', (socket) =>
       });
   });
 
-  socket.on('join_lobby', (data, new_user) =>
+  socket.on('join_lobby', (data) =>
   {
     let lobby_idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
 
-    if(new_user)
+    lobby[lobby_idx].info.no_users++;
+
+    let player = {
+      id: 0,
+      socket_id: data.socket_id,
+      username: data.username,
+      team: 'null'
+    };
+
+    //if data has id and team attributes set 
+    if(data.id && data.team)
     {
-      lobby[lobby_idx].info.no_users++;
-      lobby[lobby_idx].players.push(
-        {
-          id: 0,
-          socket_id: data.socket_id,
-          username: data.username,
-          team: 'null'
-        });
+      player.id = data.id;
+      player.team = data.team;
     }
+
+    lobby[lobby_idx].players.push(player);
 
     socket.join(data.lobby);
     io.in(data.lobby).emit('new_user', lobby[lobby_idx].players);
@@ -140,11 +147,6 @@ io.on('connection', (socket) =>
     let team_one_id = 1;
     let team_two_id = 2;
 
-    // $.each(lobby[lobby_idx].players, (i,v) => 
-    // {
-      
-    // });
-
     lobby[lobby_idx].players.forEach(v => {
       if(v.team == 1)
       {
@@ -158,8 +160,6 @@ io.on('connection', (socket) =>
       }
     });
 
-    // creates temporary duplicate data for players
-    lobby[lobby_idx].temp_players = lobby[lobby_idx].players.slice();
 
     // create game data object
     let game_data = 
@@ -177,6 +177,29 @@ io.on('connection', (socket) =>
     lobby[lobby_idx].game_data = game_data;
 
     io.in(lobby_name).emit('start_game');
+  });
+
+  socket.on('get_my_info', (lobby_name, callback)=> 
+  {
+    debugger;
+    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+
+    if(lobby_idx > -1)
+    {
+      let p_idx = lobby[lobby_idx].players.findIndex(index => index.socket_id == socket.id);
+
+      let user_info = 
+      {
+        id: lobby[lobby_idx].players[p_idx].id,
+        team: lobby[lobby_idx].players[p_idx].team
+      };
+  
+      callback(user_info);
+    }
+    else
+    {
+      console.log(`FUCK  - ${lobby_idx}`);
+    }
   });
 
   socket.on('leave_lobby', (room) =>
@@ -271,16 +294,6 @@ function remove_user(socket){
   }
   console.log(`User Removed`);
 }
-
-// function in_lobby(socketID)
-// {
-//   let lobby_idx = lobby.findIndex(l_idx => l_idx.players.findIndex(p_idx => p_idx.socket_id == socketID) > -1);
-
-//   if(lobby_idx > -1)
-//   {
-//     io.in(lobby[lobby_idx].lobby_name).emit('lobby_changes', lobby[lobby_idx].players);
-//   }
-// }
 
 
 

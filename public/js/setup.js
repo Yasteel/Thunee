@@ -13,7 +13,7 @@ $(document).ready(function()
       user_data = JSON.parse(sessionStorage.getItem("user_data"));
       user_data.socket_id = socket.id;
       sessionStorage.setItem('user_data', JSON.stringify(user_data));
-      socket.emit('join_lobby', user_data, true);
+      socket.emit('join_lobby', user_data);
       socket.emit('fetch_lobby', user_data.lobby);
 
       $('span.lobby_name').text(user_data.lobby);
@@ -385,5 +385,12 @@ socket.on('team_changes', (new_players) =>
 
 socket.on('start_game', () => 
 {
-  window.location.href = "game.html";
+  socket.emit('get_my_info', user_data.lobby, (myInfo) =>
+  {
+    user_data.id = myInfo.id;
+    user_data.team = myInfo.team;
+    sessionStorage.setItem('user_data', JSON.stringify(user_data));
+    window.location.href = "game.html";
+  });
+  
 });
