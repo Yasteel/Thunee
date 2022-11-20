@@ -14,13 +14,13 @@ socket.on("connect", () => {
 
     sessionStorage.setItem('user_data', JSON.stringify(user_data));
     socket.emit('join_lobby', user_data);
+    $('span.lobby_name').text(user_data.lobby);
   }
   else
   {
     window.location.href = "index.html";
   }
 
-  // $('span.lobby_name').text(user_data.lobby);
 });
 
 socket.on('new_user', (users) => 
