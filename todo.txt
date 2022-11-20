@@ -248,3 +248,12 @@ players:
         ]
 
 browser-sync start --server --files ".html, *.css, css/*.css"
+
+//////////////////////////////////////////////////////////////////////////////////
+on game.html load
+  |
+  ->  on socket connection
+      |
+      ->  read session data + set user team and id to lobby Object
+      ->  get data pertaining to game only
+      ->  check id and display accordingly

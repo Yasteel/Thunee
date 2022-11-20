@@ -85,7 +85,7 @@ io.on('connection', (socket) =>
 
   socket.on('join_lobby', (data) =>
   {
-    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == data.lobby);
+    let lobby_idx = get_lobby_index(data.lobby);
 
     lobby[lobby_idx].info.no_users++;
 
@@ -136,7 +136,7 @@ io.on('connection', (socket) =>
 
   socket.on('start_game', (lobby_name) =>
   {
-    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+    let lobby_idx = get_lobby_index(lobby_name);;
 
     // changing state flags
     lobby[lobby_idx].info.delete_lobby = false;
@@ -182,7 +182,7 @@ io.on('connection', (socket) =>
   socket.on('get_my_info', (lobby_name, callback)=> 
   {
     debugger;
-    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+    let lobby_idx = get_lobby_index(lobby_name);
 
     if(lobby_idx > -1)
     {
@@ -218,10 +218,31 @@ io.on('connection', (socket) =>
   // event to send player info to each lobby //
   socket.on('fetch_lobby', (lobby_name) =>
   {
-    let lobby_idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+    let lobby_idx = get_lobby_index(lobby_name);
     if(lobby_idx > -1)
     {
       io.in(lobby[lobby_idx].info.lobby_name).emit("lobby_changes", lobby[lobby_idx].players);
+    }
+  });
+
+  socket.on('get_game_data', (lobby_name, callback) => 
+  {
+    let lobby_idx = get_lobby_index(lobby_name);
+    
+    if(lobby_idx > -1)
+    {
+      let game_data = 
+      {
+        dealing: lobby[lobby_idx].game_data.dealing,
+        trumping: lobby[lobby_idx].game_data.trumping,
+        ball_count: lobby[lobby_idx].game_data.ball_count,
+        trump: lobby[lobby_idx].game_data.trump,
+        count: lobby[lobby_idx].game_data.count,
+        calls: lobby[lobby_idx].game_data.calls,
+        played_cards: lobby[lobby_idx].game_data.played_cards
+      };
+
+      callback(game_data);
     }
   });
 });
@@ -234,7 +255,7 @@ function check_lobby(username, lobby_name)
   }
   else
   {
-    var idx = lobby.findIndex(index => index.info.lobby_name == lobby_name);
+    var idx = get_lobby_index(lobby_name);
     if(idx == -1)
     {
       return '0';     // if there are lobbies but none with the specified lobby_name, create one with user
@@ -295,7 +316,10 @@ function remove_user(socket){
   console.log(`User Removed`);
 }
 
-
+function get_lobby_index(lobby_name)
+{
+  return lobby.findIndex(index => index.info.lobby_name == lobby_name);
+}
 
 class Deck{
 
