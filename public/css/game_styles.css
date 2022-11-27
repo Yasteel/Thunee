@@ -6,7 +6,7 @@ section.main{
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-rows: 1fr .9fr .4fr;
+  grid-template-rows: 1.2fr .9fr .2fr;
   gap: 1rem;
   padding: 1rem;
 }
@@ -21,6 +21,8 @@ section.main > div{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
+
+
 /* .row_1 > div{border: 1px solid black;} */
 .row_1 .sack{
   display: flex;
@@ -46,6 +48,28 @@ section.main > div{
 
 .row_1 .play_area{
   display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 3rem;
+}
+
+.row_1 .play_area .notification{
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: .6rem;
+  border-radius: 1rem;
+  background: var(--d_black);
+  color: var(--d_white);
+}
+.row_1 .play_area .notification i{
+  font-size: 1.3rem;
+  margin-right: 1rem;
+  color: var(--purple)
+}
+
+.row_1 .play_area .cards{
+  display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 1rem;
@@ -57,7 +81,7 @@ section.main > div{
   background: var(--d_white);
 }
 .row_1 .play_area .card.empty{
- background: black; 
+ background: var(--d_black); 
 }
 .row_1 .play_area .card.empty > *{
   display: none;

@@ -55,10 +55,15 @@ function init_display()
       </div>
 
       <div class="play_area">
-        <div class="card empty"></div>
-        <div class="card empty"></div>
-        <div class="card empty"></div>
-        <div class="card empty"></div>
+        <div class="notification">
+          <p><i class="fa-solid fa-sharp fa-circle-info"></i><span class="message"></span></p>
+        </div>
+        <div class="cards">
+          <div class="card empty m"></div>
+          <div class="card empty m"></div>
+          <div class="card empty m"></div>
+          <div class="card empty m"></div>
+        </div>
       </div>
 
       <div class="sack">
@@ -82,6 +87,14 @@ function init_display()
   $('.loading').removeClass('show');
   
 }
+
+// function display_actions()
+// {
+//   if(user_data.id == game_data.trumping)
+//   {
+
+//   }
+// }
 
 
 socket.on('receiveLobby', data =>

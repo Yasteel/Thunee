@@ -68,8 +68,7 @@ io.on('connection', (socket) =>
           login: true,
           delete_lobby: true,
           start_game: false,
-          no_users: 1,
-          round: 0
+          no_users: 1
         },
         players:
         [
@@ -171,7 +170,8 @@ io.on('connection', (socket) =>
       'count': 0,
       'calls': {'id': 0, 'value': 0},
       'deck': new Deck(),
-      'played_cards': 'null'
+      'played_cards': 'null',
+      'phase': 0
     };
 
     lobby[lobby_idx].game_data = game_data;
@@ -233,13 +233,14 @@ io.on('connection', (socket) =>
     {
       let game_data = 
       {
-        dealing: lobby[lobby_idx].game_data.dealing,
-        trumping: lobby[lobby_idx].game_data.trumping,
-        ball_count: lobby[lobby_idx].game_data.ball_count,
-        trump: lobby[lobby_idx].game_data.trump,
-        count: lobby[lobby_idx].game_data.count,
-        calls: lobby[lobby_idx].game_data.calls,
-        played_cards: lobby[lobby_idx].game_data.played_cards
+        'dealing': lobby[lobby_idx].game_data.dealing,
+        'trumping': lobby[lobby_idx].game_data.trumping,
+        'ball_count': lobby[lobby_idx].game_data.ball_count,
+        'trump': lobby[lobby_idx].game_data.trump,
+        'count': lobby[lobby_idx].game_data.count,
+        'calls': lobby[lobby_idx].game_data.calls,
+        'played_cards': lobby[lobby_idx].game_data.played_cards,
+        'phase': lobby[lobby_idx].game_data.phase  
       };
 
       callback(game_data);
