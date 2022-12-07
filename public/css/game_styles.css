@@ -62,6 +62,9 @@ section.main > div{
   background: var(--d_black);
   color: var(--d_white);
 }
+.row_1 .play_area .notification p{
+  text-transform: capitalize;
+}
 .row_1 .play_area .notification i{
   font-size: 1.3rem;
   margin-right: 1rem;
@@ -99,6 +102,10 @@ section.main > div{
   height: 165px;
   background: var(--d_white);
   border-radius: .5rem;
+}
+.row_2 .card:is(:hover, :focus, .selected){
+  box-shadow: 0px 0px 15px var(--l_white);
+  cursor: pointer;
 }
 
 /* ------------Row 2------------- */

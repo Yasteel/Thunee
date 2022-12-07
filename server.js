@@ -164,14 +164,21 @@ io.on('connection', (socket) =>
     let game_data = 
     {
       'dealing': 1,
-      'trumping': 2,
+      'trumping': 
+      {
+        'team': 2, 
+        'id': 2, 
+        'call': 0,
+        'keep': []
+      },
+      'turn': 3,
+      'phase': 0,
       'ball_count': [0,0],
       'trump': 'null',
       'count': 0,
-      'calls': {'id': 0, 'value': 0},
+      'jodhi': {'id': 0, 'value': 0},
       'deck': new Deck(),
-      'played_cards': 'null',
-      'phase': 0
+      'played_cards': 'null'
     };
 
     lobby[lobby_idx].game_data = game_data;
@@ -181,7 +188,6 @@ io.on('connection', (socket) =>
 
   socket.on('get_my_info', (lobby_name, callback)=> 
   {
-    debugger;
     let lobby_idx = get_lobby_index(lobby_name);
 
     if(lobby_idx > -1)
@@ -212,7 +218,6 @@ io.on('connection', (socket) =>
     remove_user(socket);
   });
 
-
   // events for actual game now//
 
   // event to send player info to each lobby //
@@ -227,25 +232,96 @@ io.on('connection', (socket) =>
 
   socket.on('get_game_data', (lobby_name, callback) => 
   {
-    let lobby_idx = get_lobby_index(lobby_name);
+    let lobbyIdx = get_lobby_index(lobby_name);
     
-    if(lobby_idx > -1)
+    if(lobbyIdx > -1)
     {
-      let game_data = 
-      {
-        'dealing': lobby[lobby_idx].game_data.dealing,
-        'trumping': lobby[lobby_idx].game_data.trumping,
-        'ball_count': lobby[lobby_idx].game_data.ball_count,
-        'trump': lobby[lobby_idx].game_data.trump,
-        'count': lobby[lobby_idx].game_data.count,
-        'calls': lobby[lobby_idx].game_data.calls,
-        'played_cards': lobby[lobby_idx].game_data.played_cards,
-        'phase': lobby[lobby_idx].game_data.phase  
-      };
-
+      let game_data = build_gameData(lobbyIdx);
       callback(game_data);
     }
   });
+
+  socket.on('notify', data => 
+  {
+    console.log(`notify ~ ${data.message}`);
+    socket.to(data.lobby).emit('notify', data.message);
+  });
+
+  socket.on('shuffle', (lobby_name, callback) => 
+  {
+    let lobby_idx = get_lobby_index(lobby_name);
+    lobby[lobby_idx].game_data.deck.shuffle();
+    callback();
+  });
+
+  socket.on('deal', (lobby_name) => 
+  {
+    let lobby_idx = get_lobby_index(lobby_name);
+    let no_cards = 0;
+    if(lobby[lobby_idx].game_data.phase == 0)
+    {
+      no_cards = 4;
+    }
+    else if(lobby[lobby_idx].game_data.phase == 2)
+    {
+      no_cards = 2;
+    }
+
+    let deck = JSON.parse(lobby[lobby_idx].game_data.deck.get_deck());
+    let current_player = lobby[lobby_idx].game_data.dealing;
+    current_player = current_player == 4 ? 1 : current_player+1;
+    lobby[lobby_idx].game_data.phase++;
+    
+    for(let i=0; i<4; i++)
+    {
+      let p_idx = lobby[lobby_idx].players.findIndex(index => index.id == current_player);
+      let player_cards = deck.splice(0, no_cards);
+      
+      console.log(`${lobby[lobby_idx].players[p_idx].id} - ${lobby[lobby_idx].players[p_idx].username} - ${lobby[lobby_idx].players[p_idx].socket_id}`);
+      
+      io.to(lobby[lobby_idx].players[p_idx].socket_id).emit('my_cards', player_cards);
+      
+      current_player = current_player == 4 ? 1 : current_player+1;
+    }
+
+    lobby[lobby_idx].game_data.deck.set_deck(deck);
+  });
+
+  socket.on('trump_call', (data) => 
+  {
+    let lobbyIdx = get_lobby_index(data.lobby);
+    if(lobby[lobbyIdx].game_data.trumping.team != data.team)
+    {
+      lobby[lobbyIdx].game_data.trumping.team = data.team;
+      lobby[lobbyIdx].game_data.trumping.id = data.id;
+      lobby[lobbyIdx].game_data.trumping.call += 10;
+      lobby[lobbyIdx].game_data.trumping.keep = [];
+    }
+
+    let game_data = build_gameData(lobbyIdx);
+
+      io.in(data.lobby).emit('trump_call', game_data);
+  });
+
+  socket.on('keep', (data) => 
+  {
+    let lobbyIdx = get_lobby_index(data.lobby);
+
+    if(lobby[lobbyIdx].game_data.trumping.keep.length == 0)
+    {
+      lobby[lobbyIdx].game_data.trumping.keep.push(socket.id);
+    }
+    else
+    {
+      lobby[lobbyIdx].game_data.phase++;
+      lobby[lobbyIdx].game_data.turn = lobby[lobbyIdx].game_data.trumping.id == 4 ? 1 : (lobby[lobbyIdx].game_data.trumping.id + 1);
+      lobby[lobbyIdx].game_data.trumping.keep = [];
+    }
+
+    let gameData = build_gameData(lobbyIdx);
+    io.in(data.lobby).emit('changePhase', gameData);
+  });
+
 });
 
 function check_lobby(username, lobby_name)
@@ -320,6 +396,23 @@ function remove_user(socket){
 function get_lobby_index(lobby_name)
 {
   return lobby.findIndex(index => index.info.lobby_name == lobby_name);
+}
+
+function build_gameData(lobbyIdx)
+{
+  let gameData = 
+  {
+    'dealing': lobby[lobbyIdx].game_data.dealing,
+    'trumping': lobby[lobbyIdx].game_data.trumping,
+    'ball_count': lobby[lobbyIdx].game_data.ball_count,
+    'trump': lobby[lobbyIdx].game_data.trump,
+    'count': lobby[lobbyIdx].game_data.count,
+    'calls': lobby[lobbyIdx].game_data.calls,
+    'played_cards': lobby[lobbyIdx].game_data.played_cards,
+    'phase': lobby[lobbyIdx].game_data.phase  
+  };
+
+  return gameData;
 }
 
 class Deck{
