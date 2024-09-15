@@ -254,15 +254,15 @@ io.on('connection', (socket) =>
     callback();
   });
 
-  socket.on('deal', (lobby_name) => 
+  socket.on('deal', (lobbyName) => 
   {
-    let lobby_idx = get_lobby_index(lobby_name);
+    let lobby_idx = get_lobby_index(lobbyName);
     let no_cards = 0;
     if(lobby[lobby_idx].game_data.phase == 0)
     {
       no_cards = 4;
     }
-    else if(lobby[lobby_idx].game_data.phase == 2)
+    else if(lobby[lobby_idx].game_data.phase == 3)
     {
       no_cards = 2;
     }
@@ -313,13 +313,23 @@ io.on('connection', (socket) =>
     }
     else
     {
-      lobby[lobbyIdx].game_data.phase++;
+      lobby[lobbyIdx].game_data.phase++; // phase 2
       lobby[lobbyIdx].game_data.turn = lobby[lobbyIdx].game_data.trumping.id == 4 ? 1 : (lobby[lobbyIdx].game_data.trumping.id + 1);
       lobby[lobbyIdx].game_data.trumping.keep = [];
     }
 
     let gameData = build_gameData(lobbyIdx);
     io.in(data.lobby).emit('changePhase', gameData);
+  });
+
+  socket.on('trump_chosen', (lobbyName, suit) => 
+  {
+    let lobbyIdx = get_lobby_index(lobbyName);
+    lobby[lobbyIdx].game_data.trump = suit;
+    lobby[lobbyIdx].game_data.phase++; // phase 3
+
+    let gameData = build_gameData(lobbyIdx);
+    io.in(lobbyName).emit('changePhase', gameData);
   });
 
 });
@@ -409,7 +419,8 @@ function build_gameData(lobbyIdx)
     'count': lobby[lobbyIdx].game_data.count,
     'calls': lobby[lobbyIdx].game_data.calls,
     'played_cards': lobby[lobbyIdx].game_data.played_cards,
-    'phase': lobby[lobbyIdx].game_data.phase  
+    'phase': lobby[lobbyIdx].game_data.phase,
+    'turn': lobby[lobbyIdx].game_data.turn
   };
 
   return gameData;

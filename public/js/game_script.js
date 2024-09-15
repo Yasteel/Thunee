@@ -151,7 +151,16 @@ function display_actions()
   }
   else if(game_data.phase == 3)
   {
+    if(user_data.id == game_data.dealing)
+    {
+      socket.emit('deal', user_data.lobby);
+    }
 
+    if(user_data.id != game_data.turn)
+    {
+      $('.notification span.message').text(`Trump is ${game_data.trump}s`);   
+      $('.notification').css({display: 'flex'});
+    }
   }
   else if(game_data.phase == 4)
   {
@@ -305,6 +314,6 @@ $(document).on('click', '.row_3 a.set_trump', function()
   else
   {
     let idx = $(this).attr('selected-trump');
-    socket.emit('trump_chosen', user_data.lobby, idx);
+    socket.emit('trump_chosen', user_data.lobby, cards[idx].suit);
   }
 });

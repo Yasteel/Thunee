@@ -265,7 +265,7 @@ phase breakdown:
   -> 0  - shuffle phase
   -> 1  - passing phase
   -> 2  - trumping phase
-  -> 3  - 100 - play phase
+  -> 3  - 10000 - play phase
 
 phase-action breakdown: 
   -> 0  - shuffle
